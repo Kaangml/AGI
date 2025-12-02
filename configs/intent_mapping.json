@@ -1,0 +1,25 @@
+{
+    "version": "1.0",
+    "created_date": "2024-12-02",
+    "intent_to_adapter": {
+        "general_chat": "adapter_tr_chat",
+        "turkish_culture": "adapter_tr_chat",
+        "code_python": "adapter_python_coder",
+        "code_debug": "adapter_python_coder",
+        "code_explain": "adapter_python_coder",
+        "memory_recall": "memory_system",
+        "general_knowledge": "base_model"
+    },
+    "intent_descriptions": {
+        "general_chat": "Genel sohbet, selamlaşma, günlük konuşma",
+        "turkish_culture": "Türk kültürü, deyimler, atasözleri, tarih",
+        "code_python": "Python kod yazma, fonksiyon oluşturma",
+        "code_debug": "Hata ayıklama, bug çözme, exception handling",
+        "code_explain": "Kod açıklama, algoritma analizi",
+        "memory_recall": "Geçmiş konuşmaları hatırlama",
+        "general_knowledge": "Genel bilgi soruları"
+    },
+    "confidence_threshold": 0.7,
+    "fallback_adapter": "base_model",
+    "low_confidence_behavior": "use_fallback"
+}

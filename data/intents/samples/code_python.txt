@@ -1,0 +1,30 @@
+Python'da liste nasıl oluşturulur?
+Bir fonksiyon yaz
+For döngüsü nasıl yazılır?
+Python'da sınıf oluştur
+Dictionary kullanımı nasıl?
+Python'da dosya okuma nasıl yapılır?
+API isteği nasıl atılır?
+JSON parse etme
+Python'da hata yakalama nasıl yapılır?
+List comprehension nedir?
+Lambda fonksiyonu yaz
+Python'da regex kullanımı
+Pandas DataFrame oluştur
+Numpy array işlemleri
+Matplotlib ile grafik çiz
+Python'da threading nasıl kullanılır?
+Async/await kullanımı
+Python decorator yaz
+Context manager oluştur
+Python'da unit test nasıl yazılır?
+Pip ile paket kurulumu
+Virtual environment oluştur
+Python'da string formatlama
+Random sayı üretme
+Python'da tarih işlemleri
+Flask ile web uygulaması yaz
+Django model oluştur
+SQLAlchemy kullanımı
+FastAPI endpoint yaz
+Python script yaz

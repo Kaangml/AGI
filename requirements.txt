@@ -1,0 +1,27 @@
+# Apple MLX Framework
+mlx>=0.10.0
+mlx-lm>=0.10.0
+
+# Hugging Face
+transformers>=4.36.0
+huggingface_hub>=0.20.0
+tokenizers>=0.15.0
+
+# Vector Database
+chromadb>=0.4.22
+
+# Embeddings
+sentence-transformers>=2.2.2
+
+# Utilities
+python-dotenv>=1.0.0
+tqdm>=4.66.0
+rich>=13.7.0
+
+# Data Processing
+pandas>=2.1.0
+numpy>=1.26.0
+
+# API (opsiyonel, ileride)
+# fastapi>=0.109.0
+# uvicorn>=0.27.0

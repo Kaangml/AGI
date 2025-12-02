@@ -1,0 +1,25 @@
+Bu kod ne yapıyor?
+Bu fonksiyonun amacı ne?
+Şu satırı açıklar mısın?
+Bu algoritma nasıl çalışıyor?
+Bu design pattern ne?
+Time complexity nedir?
+Space complexity açıkla
+Bu syntax ne anlama geliyor?
+OOP prensipleri neler?
+SOLID prensipleri nedir?
+Bu decorator ne işe yarıyor?
+Generator nasıl çalışır?
+Yield ne demek?
+Self parametresi neden var?
+__init__ metodu ne işe yarar?
+__str__ vs __repr__ farkı
+Static method nedir?
+Class method ne işe yarar?
+Property decorator açıkla
+Magic methods nelerdir?
+Bu import ne işe yarıyor?
+Recursion nasıl çalışıyor?
+Memoization nedir?
+Binary search nasıl çalışır?
+Big O notation açıkla

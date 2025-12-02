@@ -1,0 +1,941 @@
+{
+  "version": "1.0",
+  "created_date": "2025-12-02",
+  "total_samples": 185,
+  "intent_distribution": {
+    "general_chat": 30,
+    "turkish_culture": 30,
+    "code_python": 30,
+    "code_debug": 30,
+    "code_explain": 25,
+    "memory_recall": 15,
+    "general_knowledge": 25
+  },
+  "intents": [
+    {
+      "text": "Merhaba",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Selam",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Nasılsın?",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "İyi günler",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Günaydın",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "İyi akşamlar",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Ne haber?",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Naber?",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Seni tanıyor muyum?",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Sen kimsin?",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Adın ne?",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Bana yardım edebilir misin?",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Teşekkür ederim",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Sağol",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Görüşürüz",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Hoşça kal",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Bugün hava nasıl?",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Canım sıkılıyor",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Seninle sohbet etmek istiyorum",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Bana bir şaka anlat",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Keyifin nasıl?",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Kendini nasıl hissediyorsun?",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Yardımına ihtiyacım var",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Bir soru sormak istiyorum",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Meşgul müsün?",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "İyi geceler",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Kolay gelsin",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Ne yapıyorsun?",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Beni dinler misin?",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "Sana bir şey söyleyeceğim",
+      "intent": "general_chat",
+      "language": "tr"
+    },
+    {
+      "text": "\"Damlaya damlaya göl olur\" ne demek?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Bu atasözünün anlamı ne?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Türkçe deyimler hakkında bilgi ver",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "\"Taşıma su ile değirmen dönmez\" ne anlama geliyor?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Türk kültüründe misafirperverlik",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Ramazan ayının önemi nedir?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Türk mutfağı hakkında bilgi ver",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Atatürk kimdir?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Türk kahvesi nasıl yapılır?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Cumhuriyet Bayramı ne zaman?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "\"Bal tutan parmağını yalar\" ne demek?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Türkiye'nin başkenti neresi?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Osmanlı İmparatorluğu hakkında",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Türk edebiyatından örnekler",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Nazım Hikmet kimdir?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Türkçe şiirler öner",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Mevlana'nın sözleri",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Türk gelenekleri nelerdir?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Bayram ziyaretleri nasıl yapılır?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Türk çayı nasıl demlenir?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Karagöz ve Hacivat nedir?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Türk müziği hakkında bilgi",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Aşık Veysel kimdir?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Türk halk dansları nelerdir?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Nevruz ne zaman kutlanır?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Türk tatlıları nelerdir?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Kapadokya nerede?",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Efes antik kenti",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "İstanbul'un tarihi",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Türk el sanatları",
+      "intent": "turkish_culture",
+      "language": "tr"
+    },
+    {
+      "text": "Python'da liste nasıl oluşturulur?",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Bir fonksiyon yaz",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "For döngüsü nasıl yazılır?",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Python'da sınıf oluştur",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Dictionary kullanımı nasıl?",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Python'da dosya okuma nasıl yapılır?",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "API isteği nasıl atılır?",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "JSON parse etme",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Python'da hata yakalama nasıl yapılır?",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "List comprehension nedir?",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Lambda fonksiyonu yaz",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Python'da regex kullanımı",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Pandas DataFrame oluştur",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Numpy array işlemleri",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Matplotlib ile grafik çiz",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Python'da threading nasıl kullanılır?",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Async/await kullanımı",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Python decorator yaz",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Context manager oluştur",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Python'da unit test nasıl yazılır?",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Pip ile paket kurulumu",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Virtual environment oluştur",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Python'da string formatlama",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Random sayı üretme",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Python'da tarih işlemleri",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Flask ile web uygulaması yaz",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Django model oluştur",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "SQLAlchemy kullanımı",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "FastAPI endpoint yaz",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Python script yaz",
+      "intent": "code_python",
+      "language": "tr"
+    },
+    {
+      "text": "Bu hata ne anlama geliyor?",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "IndexError hatası alıyorum",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "TypeError: 'NoneType' hatası",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "Bu kod neden çalışmıyor?",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "Syntax error hatası",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "ImportError nasıl çözülür?",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "Bu bug'ı nasıl düzeltebilirim?",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "Kodumda bir sorun var",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "Hata mesajını açıklar mısın?",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "AttributeError hatası",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "KeyError hatası alıyorum",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "Bu exception'ı nasıl yakalarım?",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "Kodun neresinde hata var?",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "Debug yapmama yardım et",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "Memory leak var galiba",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "Infinite loop problemi",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "Race condition olabilir mi?",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "Segmentation fault hatası",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "Stack overflow hatası",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "RecursionError nasıl çözülür?",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "NameError: name is not defined",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "ValueError hatası",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "ZeroDivisionError",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "FileNotFoundError",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "PermissionError nasıl çözülür?",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "ModuleNotFoundError",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "ConnectionError alıyorum",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "TimeoutError nasıl handle edilir?",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "AssertionError ne demek?",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "RuntimeError çözümü",
+      "intent": "code_debug",
+      "language": "tr"
+    },
+    {
+      "text": "Bu kod ne yapıyor?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Bu fonksiyonun amacı ne?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Şu satırı açıklar mısın?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Bu algoritma nasıl çalışıyor?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Bu design pattern ne?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Time complexity nedir?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Space complexity açıkla",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Bu syntax ne anlama geliyor?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "OOP prensipleri neler?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "SOLID prensipleri nedir?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Bu decorator ne işe yarıyor?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Generator nasıl çalışır?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Yield ne demek?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Self parametresi neden var?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "__init__ metodu ne işe yarar?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "__str__ vs __repr__ farkı",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Static method nedir?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Class method ne işe yarar?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Property decorator açıkla",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Magic methods nelerdir?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Bu import ne işe yarıyor?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Recursion nasıl çalışıyor?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Memoization nedir?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Binary search nasıl çalışır?",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Big O notation açıkla",
+      "intent": "code_explain",
+      "language": "tr"
+    },
+    {
+      "text": "Dün ne konuştuk?",
+      "intent": "memory_recall",
+      "language": "tr"
+    },
+    {
+      "text": "Geçen sefer ne sormuştum?",
+      "intent": "memory_recall",
+      "language": "tr"
+    },
+    {
+      "text": "Önceki konuşmamızı hatırlıyor musun?",
+      "intent": "memory_recall",
+      "language": "tr"
+    },
+    {
+      "text": "Son konuşmamız neydi?",
+      "intent": "memory_recall",
+      "language": "tr"
+    },
+    {
+      "text": "Bana daha önce ne söylemiştin?",
+      "intent": "memory_recall",
+      "language": "tr"
+    },
+    {
+      "text": "Hatırlıyor musun?",
+      "intent": "memory_recall",
+      "language": "tr"
+    },
+    {
+      "text": "Az önce ne demiştim?",
+      "intent": "memory_recall",
+      "language": "tr"
+    },
+    {
+      "text": "Konuşma geçmişimizi göster",
+      "intent": "memory_recall",
+      "language": "tr"
+    },
+    {
+      "text": "Önceki sorularımı listele",
+      "intent": "memory_recall",
+      "language": "tr"
+    },
+    {
+      "text": "Benimle ilgili ne biliyorsun?",
+      "intent": "memory_recall",
+      "language": "tr"
+    },
+    {
+      "text": "Daha önce bu konuyu konuştuk mu?",
+      "intent": "memory_recall",
+      "language": "tr"
+    },
+    {
+      "text": "Geçmişte ne öğretmiştim sana?",
+      "intent": "memory_recall",
+      "language": "tr"
+    },
+    {
+      "text": "Benim tercihlerimi hatırlıyor musun?",
+      "intent": "memory_recall",
+      "language": "tr"
+    },
+    {
+      "text": "Önceden kaydettiğin notları göster",
+      "intent": "memory_recall",
+      "language": "tr"
+    },
+    {
+      "text": "Son projemiz neydi?",
+      "intent": "memory_recall",
+      "language": "tr"
+    },
+    {
+      "text": "Dünya'nın çapı ne kadar?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Güneş sisteminde kaç gezegen var?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "En yüksek dağ hangisi?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Suyun kaynama noktası kaç derece?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Einstein'ın görelilik teorisi nedir?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Fotosentez nasıl çalışır?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "DNA nedir?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Yapay zeka nedir?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Kuantum fiziği ne demek?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "İklim değişikliği nedir?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Ekonomi nasıl çalışır?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Demokrasi ne demek?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Evrim teorisi nedir?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Galaksimizin adı ne?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Işık hızı nedir?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Pi sayısı nedir?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Atom nasıl yapılır?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Yerçekimi nedir?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Elektrik nasıl üretilir?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "İnternet nasıl çalışır?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Blockchain nedir?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Machine learning nedir?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "5G teknolojisi nedir?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Yapay sinir ağları nedir?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Kara delik nedir?",
+      "intent": "general_knowledge",
+      "language": "tr"
+    }
+  ]
+}

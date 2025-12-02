@@ -1,0 +1,30 @@
+Bu hata ne anlama geliyor?
+IndexError hatası alıyorum
+TypeError: 'NoneType' hatası
+Bu kod neden çalışmıyor?
+Syntax error hatası
+ImportError nasıl çözülür?
+Bu bug'ı nasıl düzeltebilirim?
+Kodumda bir sorun var
+Hata mesajını açıklar mısın?
+AttributeError hatası
+KeyError hatası alıyorum
+Bu exception'ı nasıl yakalarım?
+Kodun neresinde hata var?
+Debug yapmama yardım et
+Memory leak var galiba
+Infinite loop problemi
+Race condition olabilir mi?
+Segmentation fault hatası
+Stack overflow hatası
+RecursionError nasıl çözülür?
+NameError: name is not defined
+ValueError hatası
+ZeroDivisionError
+FileNotFoundError
+PermissionError nasıl çözülür?
+ModuleNotFoundError
+ConnectionError alıyorum
+TimeoutError nasıl handle edilir?
+AssertionError ne demek?
+RuntimeError çözümü
