@@ -1,0 +1,39 @@
+# EVO-TR Türkçe Uzman LoRA Konfigürasyonu
+# Mac Mini M4 için optimize edilmiş
+
+# Model
+model: "./models/base/qwen-2.5-3b-instruct"
+
+# LoRA Parametreleri
+lora_parameters:
+  rank: 8                    # LoRA rank (düşük = daha az parametre)
+  alpha: 16                  # Scaling factor (genelde 2*rank)
+  dropout: 0.05              # Dropout oranı
+  scale: 1.0                 # LoRA scale
+
+# Target Modüller - sadece attention için
+lora_layers: 16              # Son 16 layer'a LoRA uygula
+
+# Training Parametreleri
+training:
+  batch_size: 2              # Mac M4 için güvenli
+  learning_rate: 1.0e-4      # Öğrenme hızı
+  epochs: 3                  # Epoch sayısı
+  warmup_steps: 50           # Warmup adımları
+  gradient_accumulation: 4   # Gradient biriktirme (effective batch = 8)
+  max_seq_length: 512        # Maximum sequence uzunluğu
+  
+# Veri
+data:
+  train: "./data/training/tr_chat_train.jsonl"
+  valid: "./data/training/tr_chat_val.jsonl"
+
+# Çıktı
+output:
+  adapter_path: "./adapters/tr_chat"
+  save_every: 500            # Her N adımda kaydet
+
+# Logging
+logging:
+  log_level: "INFO"
+  steps_per_report: 50       # Her N adımda rapor

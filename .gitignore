@@ -65,3 +65,5 @@ mlx_cache/
 # Hugging Face
 .cache/
 hub/
+
+adapters

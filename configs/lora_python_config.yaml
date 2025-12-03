@@ -1,0 +1,53 @@
+# Python Coder LoRA Training Config
+# FAZ 3: Python Uzman LoRA
+
+# Model
+model: "models/base/qwen-2.5-3b-instruct"
+tokenizer_config:
+  trust_remote_code: true
+
+# Data
+data: "data/training/python_coder_mlx"
+train: true
+
+# Training hyperparameters
+batch_size: 4                    # Mac Mini M4 için optimize
+iters: 3000                      # 12000 örnek, ~3 epoch
+val_batches: 50                  # Validation batch sayısı
+steps_per_eval: 200              # Her 200 adımda eval
+steps_per_report: 50             # Her 50 adımda log
+
+# Optimizer
+learning_rate: 1.0e-5            # Code için daha düşük lr
+lr_schedule:
+  name: "cosine"
+  warmup: 100
+  arguments: [1.0e-5, 3000, 1.0e-6]
+
+# LoRA config
+lora_layers: 16                  # Tüm layer'lar
+lora_parameters:
+  rank: 16                       # Daha yüksek rank (code complexity için)
+  alpha: 32                      # alpha = 2 * rank
+  dropout: 0.05
+  scale: 1.0
+
+# Adapter targets (Qwen için)
+lora_targets:
+  - "self_attn.q_proj"
+  - "self_attn.v_proj"
+  - "self_attn.k_proj"           # K de ekle (code understanding için)
+  - "self_attn.o_proj"           # O da ekle
+
+# Sequence length
+max_seq_length: 1024             # Code için daha uzun context
+
+# Checkpoints
+adapter_path: "adapters/python_coder"
+save_every: 500                  # Her 500 adımda checkpoint
+
+# Seed
+seed: 42
+
+# Gradient accumulation (effective batch = 4 * 2 = 8)
+grad_accumulation_steps: 2

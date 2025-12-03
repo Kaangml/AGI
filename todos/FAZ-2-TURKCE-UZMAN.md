@@ -1,9 +1,31 @@
 # 🇹🇷 FAZ 2: Türkçe Uzman - LoRA Adaptör #1
 
-**Durum:** ⬜ Başlanmadı  
-**Tahmini Süre:** 3-4 gün  
+**Durum:** ✅ Tamamlandı  
+**Başlangıç:** 2 Aralık 2024  
+**Bitiş:** 2 Aralık 2024  
 **Öncelik:** 🟠 Yüksek  
-**Bağımlılık:** Faz 0 ve Faz 1 tamamlanmış olmalı
+**Bağımlılık:** ✅ Faz 0 ve Faz 1 tamamlandı
+
+---
+
+## 📊 Sonuçlar
+
+### Veri Seti
+- **Aya Dataset (TR):** 4046 örnek
+- **Manuel veriler:** 119 örnek (selamlaşma, kültür, atasözleri, günlük sohbet)
+- **Toplam:** 4147 örnek (train: 3732, val: 415)
+
+### Eğitim (V2 - Final)
+- **Parametreler:** batch=4, lr=5e-5, 3000 iter, max_seq=768
+- **Best Val Loss:** 1.77 (iter 1500)
+- **Peak Memory:** 7GB
+- **Adapter Size:** 26.6MB
+
+### ⚠️ Bilinen Problemler
+- Base model (Qwen-2.5-3B) Türkçe'de zayıf
+- Tekrarlama (repetition) problemi görülüyor
+- Bazı faktüel bilgiler yanlış olabiliyor
+- İlerde daha kaliteli veri ve/veya daha güçlü base model önerilir
 
 ---
 

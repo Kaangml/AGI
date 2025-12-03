@@ -1,9 +1,10 @@
 # 🐍 FAZ 3: Python Uzman - LoRA Adaptör #2
 
-**Durum:** ⬜ Başlanmadı  
+**Durum:** 🔄 Devam Ediyor  
+**Başlangıç:** 2 Aralık 2024  
 **Tahmini Süre:** 2-3 gün  
 **Öncelik:** 🟠 Yüksek  
-**Bağımlılık:** Faz 0, 1, 2 tamamlanmış olmalı
+**Bağımlılık:** ✅ Faz 0, 1, 2 tamamlandı
 
 ---
 
@@ -50,37 +51,27 @@ Qwen-2.5-3B-Instruct base modeli üzerine Python programlama, kod yazma, debuggi
 ### 3.1 Veri Seti Araştırma ve İndirme
 
 #### 3.1.1 HumanEval Dataset
-- [ ] Hugging Face'de `openai/humaneval` incele
-- [ ] Veri formatını anla:
-  ```python
-  {
-      "task_id": "HumanEval/0",
-      "prompt": "def has_close_elements(...",
-      "canonical_solution": "for idx, elem...",
-      "test": "def check(candidate)..."
-  }
-  ```
-- [ ] Python subset'ini kontrol et (tamamı Python)
+- [x] Hugging Face'de `openai/humaneval` incele ✅
+- [x] Veri formatını anla ✅
+- [x] Python subset'ini kontrol et (tamamı Python) ✅
 
 #### 3.1.2 MBPP Dataset
-- [ ] `google-research/mbpp` incele
-- [ ] Örnek sayısını not et (~1000 problem)
-- [ ] Format:
-  ```python
-  {
-      "text": "Write a function to...",
-      "code": "def function_name(...)...",
-      "test_list": ["assert function_name(...) == ..."]
-  }
-  ```
+- [x] `google-research/mbpp` incele ✅
+- [x] Örnek sayısını not et (~964 problem) ✅
+- [x] Format anlaşıldı ✅
 
 #### 3.1.3 CodeAlpaca Dataset
-- [ ] `sahil2801/CodeAlpaca-20k` incele
-- [ ] Multi-language olduğu için Python filtresi uygula
-- [ ] Instruction-response formatında olduğunu doğrula
+- [x] `sahil2801/CodeAlpaca-20k` incele ✅
+- [x] Multi-language olduğu için Python filtresi uygula ✅
+- [x] Instruction-response formatında olduğunu doğrula ✅
 
 #### 3.1.4 Veri İndirme Script'i
-- [ ] `scripts/download_code_datasets.py` oluştur:
+- [x] `scripts/download_code_datasets.py` oluşturuldu ✅
+- [x] Script çalıştırıldı: 15336 örnek indirildi ✅
+  - HumanEval: 164 örnek
+  - MBPP: 964 örnek  
+  - CodeAlpaca (Python): 9208 örnek
+  - Code-Instructions: 5000 örnek
   ```python
   #!/usr/bin/env python3
   """Kod eğitim veri setlerini indir"""
@@ -212,18 +203,38 @@ Qwen-2.5-3B-Instruct base modeli üzerine Python programlama, kod yazma, debuggi
   ```
 
 #### 3.2.4 Best Practices ve Clean Code (20+ örnek)
-- [ ] `data/training/manual_python/best_practices.jsonl` oluştur:
-  ```json
-  {"instruction": "Python'da dosya okuma için best practice göster", "input": "", "output": "# Context manager kullanın (dosya otomatik kapanır)\nwith open('dosya.txt', 'r', encoding='utf-8') as f:\n    content = f.read()\n\n# Satır satır okuma (büyük dosyalar için)\nwith open('dosya.txt', 'r', encoding='utf-8') as f:\n    for line in f:\n        process(line.strip())\n\n# Pathlib kullanımı (modern yaklaşım)\nfrom pathlib import Path\n\nfile_path = Path('data') / 'dosya.txt'\nif file_path.exists():\n    content = file_path.read_text(encoding='utf-8')\n\n# YAPMAYIN:\n# f = open('dosya.txt', 'r')  # Dosya kapanmayabilir\n# content = f.read()\n# f.close()"}
-  {"instruction": "Python'da exception handling nasıl yapılmalı?", "input": "", "output": "# Spesifik exception yakalayın\ntry:\n    result = 10 / 0\nexcept ZeroDivisionError:\n    print('Sıfıra bölme hatası!')\n    result = 0\n\n# Birden fazla exception\ntry:\n    value = int(input('Sayı girin: '))\n    result = 100 / value\nexcept ValueError:\n    print('Geçersiz sayı formatı')\nexcept ZeroDivisionError:\n    print('Sıfıra bölme hatası')\nfinally:\n    print('İşlem tamamlandı')\n\n# Custom exception\nclass ValidationError(Exception):\n    pass\n\ndef validate_age(age):\n    if age < 0:\n        raise ValidationError('Yaş negatif olamaz')\n    return age\n\n# YAPMAYIN:\n# except:  # Tüm hataları yakalar, tehlikeli\n# except Exception:  # Çok genel"}
-  ```
+- [x] `data/training/manual_python/best_practices.jsonl` oluşturuldu ✅ (16 örnek)
 
 ---
 
 ### 3.3 Veri Birleştirme ve Temizleme
 
 #### 3.3.1 Kod Veri Temizleme
-- [ ] `scripts/clean_code_data.py` oluştur:
+- [x] `scripts/clean_code_data.py` oluşturuldu ✅
+- [x] Script çalıştırıldı: 15390 → 13334 temiz örnek ✅
+  - Geçersiz (invalid): 49
+  - Non-Python: 2007
+  - Duplikat: 0
+
+#### 3.3.2 Train/Val Bölme
+- [x] `scripts/convert_python_to_mlx.py` oluşturuldu ✅
+- [x] MLX format dönüşümü yapıldı ✅
+  - Train: 12000 örnek
+  - Valid: 1334 örnek
+- [x] %90 train, %10 validation ✅
+
+---
+
+### 3.4 LoRA Eğitim Konfigürasyonu
+
+#### 3.4.1 Config Dosyası
+- [x] `configs/lora_python_config.yaml` oluşturuldu ✅
+  - rank=16, alpha=32 (FAZ 2'den daha yüksek)
+  - lr=1e-5 (code için daha düşük)
+  - iters=3000
+  - max_seq_length=1024
+
+#### 3.4.2 Eğitim
   ```python
   #!/usr/bin/env python3
   """Python kod verisini temizle ve birleştir"""
