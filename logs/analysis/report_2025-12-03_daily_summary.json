@@ -1,0 +1,29 @@
+{
+  "date": "2025-12-03",
+  "analysis_type": "daily_summary",
+  "generated_at": "2025-12-03T13:18:42.318053",
+  "summary": {
+    "total_conversations": 5,
+    "successful": 5,
+    "failed": 0,
+    "success_rate": 1.0,
+    "unique_sessions": 1,
+    "avg_response_time_ms": 0.0002384185791015625,
+    "max_response_time_ms": 0.0011920928955078125,
+    "error_count": 0
+  },
+  "details": {
+    "intent_distribution": {
+      "general_chat": 5
+    },
+    "adapter_usage": {
+      "null": 5
+    },
+    "hourly_distribution": {
+      "13": 5
+    }
+  },
+  "recommendations": [
+    "Sistem stabil çalışıyor. Düzenli izlemeye devam edin."
+  ]
+}

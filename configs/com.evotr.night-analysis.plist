@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+EVO-TR Night Analysis LaunchD Configuration
+============================================
+
+Bu plist dosyası macOS'ta gece analizini otomatik çalıştırır.
+
+Kurulum:
+1. Bu dosyayı ~/Library/LaunchAgents/ dizinine kopyalayın:
+   cp configs/com.evotr.night-analysis.plist ~/Library/LaunchAgents/
+
+2. Yolları güncelleyin (PROJECT_PATH ve PYTHON_PATH)
+
+3. LaunchAgent'ı yükleyin:
+   launchctl load ~/Library/LaunchAgents/com.evotr.night-analysis.plist
+
+4. Durumu kontrol edin:
+   launchctl list | grep evotr
+
+Kaldırma:
+   launchctl unload ~/Library/LaunchAgents/com.evotr.night-analysis.plist
+   rm ~/Library/LaunchAgents/com.evotr.night-analysis.plist
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.evotr.night-analysis</string>
+    
+    <key>ProgramArguments</key>
+    <array>
+        <!-- Python yolu (.venv içindeki) -->
+        <string>/Users/kaan/Desktop/Kaan/Personal/agı-llm/.venv/bin/python</string>
+        <!-- Script yolu -->
+        <string>/Users/kaan/Desktop/Kaan/Personal/agı-llm/scripts/run_analysis.py</string>
+    </array>
+    
+    <key>WorkingDirectory</key>
+    <string>/Users/kaan/Desktop/Kaan/Personal/agı-llm</string>
+    
+    <!-- Her gece saat 03:00'te çalıştır -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>3</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    
+    <!-- Log dosyaları -->
+    <key>StandardOutPath</key>
+    <string>/Users/kaan/Desktop/Kaan/Personal/agı-llm/logs/launchd_stdout.log</string>
+    
+    <key>StandardErrorPath</key>
+    <string>/Users/kaan/Desktop/Kaan/Personal/agı-llm/logs/launchd_stderr.log</string>
+    
+    <!-- Environment variables -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PYTHONPATH</key>
+        <string>/Users/kaan/Desktop/Kaan/Personal/agı-llm</string>
+    </dict>
+    
+    <!-- Sistem açılışında çalıştırma -->
+    <key>RunAtLoad</key>
+    <false/>
+    
+    <!-- Hata durumunda yeniden başlatma -->
+    <key>KeepAlive</key>
+    <false/>
+</dict>
+</plist>

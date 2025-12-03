@@ -1,0 +1,59 @@
+{
+  "generated_at": "2025-12-03T13:15:06.340688",
+  "metrics": {
+    "generated_at": "2025-12-03T13:15:06.340722",
+    "metrics": {},
+    "alerts": []
+  },
+  "retraining_triggers": {
+    "router_retrain": false,
+    "lora_retrain": false,
+    "memory_rebuild": false
+  },
+  "pending_tasks": [
+    {
+      "task_id": "IMP-20251203-0001",
+      "improvement_type": "system_config",
+      "priority": 2,
+      "title": "Yanıt Süresini Azalt",
+      "description": "avg_response_time_ms: 7525.00% (hedef: 200000.00%)",
+      "evidence": [
+        "Current: 7525.00%",
+        "Target: 200000.00%",
+        "Trend: stable"
+      ],
+      "suggested_actions": [
+        "Model cache stratejisini gözden geçir",
+        "LoRA adapter yükleme süresini optimize et",
+        "Memory search parametrelerini ayarla",
+        "Batch size ayarlarını kontrol et"
+      ],
+      "estimated_effort": "medium",
+      "created_at": "2025-12-03T13:13:26.795875",
+      "status": "pending"
+    },
+    {
+      "task_id": "IMP-20251203-0002",
+      "improvement_type": "memory_enrichment",
+      "priority": 1,
+      "title": "Hafıza Kullanımını Artır",
+      "description": "memory_hit_rate: 0.00% (hedef: 30.00%)",
+      "evidence": [
+        "Current: 0.00%",
+        "Target: 30.00%",
+        "Trend: stable"
+      ],
+      "suggested_actions": [
+        "Memory'e daha fazla fact ekle",
+        "Embedding model'i değerlendir",
+        "Similarity threshold'u ayarla",
+        "Daha fazla konuşma kaydet"
+      ],
+      "estimated_effort": "low",
+      "created_at": "2025-12-03T13:13:26.795880",
+      "status": "pending"
+    }
+  ],
+  "new_tasks": [],
+  "training_suggestions": []
+}

@@ -27,10 +27,8 @@ wheels/
 *.egg
 
 # Models (büyük dosyalar - Git LFS veya download script ile yönetilecek)
-models/base/*
-!models/base/.gitkeep
-adapters/tr_chat/*.safetensors
-adapters/python_coder/*.safetensors
+models/
+adapters/
 
 # Data (Chromadb ve training verileri)
 data/chromadb/*
@@ -66,5 +64,5 @@ mlx_cache/
 .cache/
 hub/
 
-adapters/
-data/
+# Not: adapters/ ve data/ içindeki büyük dosyalar yukarıda özel olarak ignore edildi
+# Config dosyaları ve .gitkeep'ler dahil edilecek

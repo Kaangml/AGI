@@ -57,6 +57,7 @@ class EvoTR:
         adapters_dir: str = "./adapters",
         router_model_path: str = "./models/router/sentence_transformer",
         intents_path: str = "./data/intents",
+        chromadb_path: str = None,
         memory_path: str = "./data/chromadb/evo_main",
         memory_collection: str = "conversations",
         max_context_messages: int = 10,
@@ -73,6 +74,7 @@ class EvoTR:
             adapters_dir: Adapter'ların dizini
             router_model_path: Router model dizini
             intents_path: Intent dataset dizini
+            chromadb_path: ChromaDB dizini (alternatif)
             memory_path: ChromaDB dizini
             memory_collection: Memory collection adı
             max_context_messages: Maksimum kısa süreli mesaj
@@ -84,6 +86,10 @@ class EvoTR:
         self.verbose = verbose
         self.use_rag = use_rag
         self.auto_adapter = auto_adapter
+        
+        # chromadb_path verilmişse onu kullan
+        if chromadb_path:
+            memory_path = chromadb_path
         
         self._log("🚀 EVO-TR başlatılıyor...")
         
@@ -240,13 +246,21 @@ class EvoTR:
         self._conversation_history.clear()
         self._log("🧹 Konuşma temizlendi")
     
+    def new_conversation(self) -> None:
+        """Yeni konuşma başlat (alias for clear_conversation)."""
+        self.clear_conversation()
+    
     def get_status(self) -> Dict[str, Any]:
         """Sistem durumu."""
+        memory_stats = self.memory.get_stats()
         return {
-            "current_intent": self._current_intent,
+            "last_intent": self._current_intent,
             "current_adapter": self.lora_manager.get_current_adapter(),
             "conversation_turns": len(self._conversation_history),
-            "memory_stats": self.memory.get_stats(),
+            "total_chats": len(self._conversation_history),
+            "short_term_messages": memory_stats["short_term"]["message_count"],
+            "long_term_documents": memory_stats["long_term"]["total_documents"],
+            "memory_stats": memory_stats,
             "inference_stats": self.inference.get_stats(),
             "available_adapters": list(self.lora_manager.list_adapters().keys()),
             "use_rag": self.use_rag,

@@ -1,0 +1,26 @@
+{
+    "name": "adapter_tr_chat",
+    "version": "2.0",
+    "created": "2024-12-02",
+    "base_model": "Qwen/Qwen2.5-3B-Instruct",
+    "base_model_path": "./models/base/qwen-2.5-3b-instruct",
+    "training_samples": 4147,
+    "training_iters": 1000,
+    "batch_size": 4,
+    "learning_rate": 5e-5,
+    "lora_rank": 8,
+    "lora_alpha": 16,
+    "lora_layers": 16,
+    "max_seq_length": 768,
+    "final_train_loss": 1.70,
+    "final_val_loss": 1.86,
+    "data_sources": [
+        "CohereForAI/aya_dataset (Turkish subset: 4046 samples)",
+        "Manual Turkish data (greetings, culture, proverbs, daily_chat: 119 samples)"
+    ],
+    "notes": [
+        "Base model has weak Turkish support",
+        "Repetition issues may occur with long generations",
+        "Factual accuracy varies - verify important information"
+    ]
+}

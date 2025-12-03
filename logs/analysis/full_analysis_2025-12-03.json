@@ -1,0 +1,35 @@
+{
+  "date": "2025-12-03",
+  "generated_at": "2025-12-03T13:18:42.317999",
+  "daily_summary": {
+    "total_conversations": 5,
+    "successful": 5,
+    "failed": 0,
+    "success_rate": 1.0,
+    "unique_sessions": 1,
+    "avg_response_time_ms": 0.0002384185791015625,
+    "max_response_time_ms": 0.0011920928955078125,
+    "error_count": 0
+  },
+  "failed_conversations": 0,
+  "failed_details": [],
+  "patterns": [
+    {
+      "pattern_type": "repeated_question_type",
+      "description": "Sık sorulan soru tipi: other",
+      "frequency": 5,
+      "examples": [
+        "Soru 0",
+        "Soru 1",
+        "Soru 2",
+        "Soru 3",
+        "Soru 4"
+      ]
+    }
+  ],
+  "extracted_facts": 0,
+  "training_suggestions": [],
+  "recommendations": [
+    "Sistem stabil çalışıyor. Düzenli izlemeye devam edin."
+  ]
+}
