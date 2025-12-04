@@ -384,3 +384,264 @@
 ---
 
 *Bu liste projemizin yol haritasıdır. Her tamamlanan görev için ⬜ yerine ✅ koyun.*
+
+---
+
+# 🚀 GELECEK FAZLAR: AGI'ya Giden Yol
+
+**Tarih:** 04 Aralık 2025  
+**Mevcut Durum:** v1.0 (PoC Tamamlandı - 93 test)  
+**Felsefe:** Bebek 🍼 → Çocuk 🧒 → Uzman 🎓 → Usta 🧙‍♂️
+
+---
+
+## 📋 Gelecek Fazlar Genel Bakış
+
+| Faz | İsim | Durum | Öncelik | Tahmini Süre |
+|-----|------|-------|---------|--------------|
+| 7 | Gelişmiş Uzmanlar | ⬜ Bekliyor | P1 | 3-4 gün |
+| 8 | Web Arayüzü | ⬜ Bekliyor | P2 | 4-5 gün |
+| 9 | Continuous Learning | ⬜ Bekliyor | P1 | 5-7 gün |
+| 10 | Test-Time Training | ⬜ Bekliyor | P2 | 7-10 gün |
+| 11 | Multi-Modal | ⬜ Bekliyor | P3 | 10-14 gün |
+| 12 | Meta-Learning | ⬜ Bekliyor | P3 | 14+ gün |
+
+---
+
+## ⬜ Faz 7: Gelişmiş Uzmanlar (More Experts)
+
+*Amaç: Yeni domain-specific LoRA adaptörleri eklemek*
+
+### 7.1 Matematik Uzmanı (LoRA #3)
+- [ ] Matematik veri seti hazırla (GSM8K, MATH)
+- [ ] Türkçe matematik problemleri ekle
+- [ ] `adapters/math_expert/` LoRA eğit
+- [ ] Router'a `code_math` intent ekle
+- [ ] Unit testler yaz
+
+### 7.2 Bilim Uzmanı (LoRA #4)
+- [ ] Bilim veri seti hazırla (fizik, kimya, biyoloji)
+- [ ] Türkçe bilim içerikleri topla
+- [ ] `adapters/science_expert/` LoRA eğit
+- [ ] Router'a `science_*` intent ekle
+- [ ] Unit testler yaz
+
+### 7.3 Tarih/Kültür Uzmanı (LoRA #5)
+- [ ] Türk tarihi veri seti hazırla
+- [ ] Osmanlı, Cumhuriyet dönemi içerikleri
+- [ ] `adapters/history_expert/` LoRA eğit
+- [ ] Router'a `history_culture` intent ekle
+- [ ] Unit testler yaz
+
+### 7.4 Adapter Versiyonlama
+- [ ] Adapter metadata schema tasarla
+- [ ] Version tracking sistemi
+- [ ] A/B testing altyapısı
+- [ ] Rollback mekanizması
+
+---
+
+## ⬜ Faz 8: Web Arayüzü (The Interface)
+
+*Amaç: Kullanıcı dostu web arayüzü oluşturmak*
+
+### 8.1 Backend API (FastAPI)
+- [ ] FastAPI proje yapısı oluştur
+- [ ] `/chat` endpoint (streaming)
+- [ ] `/memory` endpoint (RAG search)
+- [ ] `/status` endpoint (sistem durumu)
+- [ ] `/adapters` endpoint (adapter listesi)
+- [ ] WebSocket desteği
+- [ ] Rate limiting
+
+### 8.2 Frontend (React/Next.js)
+- [ ] Next.js proje yapısı
+- [ ] Chat UI komponenti
+- [ ] Streaming response görüntüleme
+- [ ] Adapter seçici
+- [ ] Konuşma geçmişi
+- [ ] Dark/Light mode
+
+### 8.3 Deployment
+- [ ] Docker containerization
+- [ ] docker-compose.yml
+- [ ] Local serving script
+- [ ] SSL/TLS ayarları
+
+---
+
+## ⬜ Faz 9: Continuous Learning (Sürekli Öğrenme)
+
+*Amaç: Kullanıcı etkileşimlerinden sürekli öğrenen sistem*
+
+### 9.1 Feedback Collection
+- [ ] Kullanıcı geri bildirim UI (👍/👎)
+- [ ] Implicit feedback tracking (edit, retry)
+- [ ] Feedback database schema
+- [ ] Geri bildirim analizi pipeline
+
+### 9.2 Active Learning
+- [ ] Uncertainty detection (düşük güven yanıtları)
+- [ ] Yeni eğitim verisi seçimi
+- [ ] Human-in-the-loop workflow
+- [ ] Annotation arayüzü
+
+### 9.3 Incremental Training
+- [ ] Online LoRA güncelleme stratejisi
+- [ ] Catastrophic forgetting önleme (EWC, SI)
+- [ ] Checkpoint yönetimi
+- [ ] A/B test ile validasyon
+
+### 9.4 Preference Learning (RLHF-lite)
+- [ ] Preference data collection
+- [ ] DPO (Direct Preference Optimization) implementasyonu
+- [ ] Reward model eğitimi
+- [ ] PPO/REINFORCE alternatifleri araştır
+
+---
+
+## ⬜ Faz 10: Test-Time Training (TTT)
+
+*Amaç: Inference sırasında anlık adaptasyon*
+
+### 10.1 TTT Araştırma
+- [ ] TTT paper'larını incele (TTT-LLM, etc.)
+- [ ] MLX uyumluluğu araştır
+- [ ] Memory/compute trade-off analizi
+- [ ] Prototype implementasyon
+
+### 10.2 Context-Aware Adaptation
+- [ ] Context encoding stratejisi
+- [ ] Gradient-based adaptation (anlık)
+- [ ] Cache mekanizması
+- [ ] Latency optimizasyonu
+
+### 10.3 Few-Shot Enhancement
+- [ ] In-context learning iyileştirme
+- [ ] Retrieval-augmented few-shot
+- [ ] Example selection stratejisi
+- [ ] Dynamic prompting
+
+### 10.4 Self-Correction
+- [ ] Çıktı kalite değerlendirme
+- [ ] Otomatik düzeltme loop
+- [ ] Consistency checking
+- [ ] Confidence calibration
+
+---
+
+## ⬜ Faz 11: Multi-Modal Yetenekler
+
+*Amaç: Görüntü, ses ve diğer modaliteleri desteklemek*
+
+### 11.1 Vision Capability
+- [ ] Vision model araştırması (LLaVA, Qwen-VL)
+- [ ] MLX uyumlu vision encoder
+- [ ] `adapters/vision_expert/` LoRA
+- [ ] Görüntü anlama testleri
+- [ ] OCR entegrasyonu
+
+### 11.2 Audio Capability
+- [ ] Whisper entegrasyonu (speech-to-text)
+- [ ] TTS entegrasyonu (text-to-speech)
+- [ ] `adapters/audio_expert/` LoRA
+- [ ] Sesli sohbet modu
+
+### 11.3 Code Visualization
+- [ ] Kod diagram üretimi (Mermaid, PlantUML)
+- [ ] Execution trace visualization
+- [ ] Debugging visual aids
+- [ ] Interactive code exploration
+
+---
+
+## ⬜ Faz 12: Meta-Learning (Learning to Learn)
+
+*Amaç: Yeni görevlere hızlı adaptasyon yeteneği*
+
+### 12.1 Meta-Learning Framework
+- [ ] MAML/Reptile araştırması
+- [ ] Task distribution tanımı
+- [ ] Meta-training loop
+- [ ] Few-shot evaluation
+
+### 12.2 Self-Directed Learning
+- [ ] Eksik bilgi tespiti (knowledge gaps)
+- [ ] Otomatik veri toplama stratejisi
+- [ ] Web scraping pipeline
+- [ ] Knowledge verification
+
+### 12.3 Skill Composition
+- [ ] LoRA composition (merging strategies)
+- [ ] Dynamic expert routing
+- [ ] Skill transfer mekanizması
+- [ ] Emergent capabilities tracking
+
+### 12.4 Otonom Araştırma
+- [ ] Paper reading pipeline
+- [ ] Knowledge synthesis
+- [ ] Experiment design
+- [ ] Self-benchmark
+
+---
+
+## 🧪 Araştırma Konuları (Research Backlog)
+
+### R1. Symbolic + Neural Hibrit
+- [ ] Knowledge graph entegrasyonu
+- [ ] Logical reasoning module
+- [ ] Causal inference
+- [ ] Neuro-symbolic architecture
+
+### R2. Efficiency Optimizations
+- [ ] Model pruning
+- [ ] Knowledge distillation
+- [ ] Speculative decoding
+- [ ] KV-cache optimization
+
+### R3. Safety & Alignment
+- [ ] Constitutional AI principles
+- [ ] Self-improvement guardrails
+- [ ] Value alignment
+- [ ] Interpretability tools
+
+### R4. Distributed Learning
+- [ ] Federated learning setup
+- [ ] Multi-device coordination
+- [ ] Privacy-preserving training
+- [ ] Edge deployment optimization
+
+---
+
+## 📊 Metrikler ve Başarı Kriterleri
+
+### Faz 7-8 (Kısa Vade)
+- [ ] 3+ yeni uzman LoRA
+- [ ] Web UI ile 10+ kullanıcı testi
+- [ ] Response latency < 1s
+- [ ] Uptime %99+
+
+### Faz 9-10 (Orta Vade)
+- [ ] Feedback-based accuracy iyileşme %10+
+- [ ] TTT latency overhead < 100ms
+- [ ] Continuous learning stability
+- [ ] Zero catastrophic forgetting
+
+### Faz 11-12 (Uzun Vade)
+- [ ] Multi-modal benchmark scores
+- [ ] Few-shot adaptation speed
+- [ ] Autonomous task completion rate
+- [ ] Novel skill acquisition
+
+---
+
+## 🔄 Güncelleme Geçmişi
+
+| Tarih | Güncelleme |
+|-------|------------|
+| 04 Aralık 2025 | Gelecek fazlar eklendi (7-12) |
+| 03 Aralık 2025 | FAZ 0-6 tamamlandı, 93 test geçti |
+
+---
+
+*"Yolculuk binlerce adımla başlar, ama ilk adımı atmadan hiçbir yere varamazsın."* 🚀
