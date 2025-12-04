@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "created_date": "2025-12-04",
-  "total_samples": 215,
+  "total_samples": 245,
   "intent_distribution": {
     "general_chat": 30,
     "turkish_culture": 30,
@@ -10,7 +10,8 @@
     "code_explain": 25,
     "code_math": 30,
     "memory_recall": 15,
-    "general_knowledge": 25
+    "general_knowledge": 25,
+    "science": 30
   },
   "intents": [
     {
@@ -1086,6 +1087,156 @@
     {
       "text": "Kara delik nedir?",
       "intent": "general_knowledge",
+      "language": "tr"
+    },
+    {
+      "text": "Newton yasaları nelerdir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Enerji korunumu ne demek?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Işık hızı kaçtır?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Elektrik akımı nasıl çalışır?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Termodinamik yasaları açıkla",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Manyetik alan nedir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Kaldırma kuvveti nasıl hesaplanır?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Dalga hareketi nedir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Kuvvet ve ivme arasındaki ilişki nedir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Elektromanyetik spektrum nedir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Periyodik tablo nasıl düzenlenmiştir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Asit ve baz farkı nedir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Kimyasal bağ türleri nelerdir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Organik kimya neyi inceler?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Redoks tepkimesi nedir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Mol kavramı ne demek?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Elektroliz nasıl yapılır?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "İyonik ve kovalent bağ farkı nedir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "pH değeri neyi gösterir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Kimyasal denge nedir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "DNA yapısını açıkla",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Fotosentez nasıl gerçekleşir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Evrim teorisi nedir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Hücre türleri nelerdir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Sinir sistemi nasıl çalışır?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Mitoz ve mayoz farkı nedir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Ekoloji nedir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Protein sentezi nasıl olur?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Kan grupları nelerdir?",
+      "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Bağışıklık sistemi nasıl çalışır?",
+      "intent": "science",
       "language": "tr"
     }
   ]

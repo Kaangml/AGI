@@ -1,0 +1,50 @@
+# EVO-TR Science Expert LoRA Configuration
+# Fizik, Kimya, Biyoloji için MLX LoRA eğitim ayarları
+
+model:
+  name: "qwen-2.5-3b-instruct"
+  path: "models/base/qwen-2.5-3b-instruct"
+
+adapter:
+  name: "science_expert"
+  output_path: "adapters/science_expert"
+
+training:
+  # LoRA parametreleri
+  lora_rank: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  
+  # Training ayarları
+  num_layers: 16
+  batch_size: 2
+  learning_rate: 1e-4
+  num_iters: 1500
+  
+  # Veri
+  data_path: "data/training/science"
+  max_seq_length: 2048
+  
+  # Checkpointing
+  save_every: 500
+  steps_per_eval: 200
+  val_batches: 25
+  
+  # Reproducibility
+  seed: 42
+
+# Training komutu:
+# mlx_lm.lora \
+#   --model models/base/qwen-2.5-3b-instruct \
+#   --data data/training/science \
+#   --train \
+#   --iters 1500 \
+#   --batch-size 2 \
+#   --learning-rate 1e-4 \
+#   --num-layers 16 \
+#   --adapter-path adapters/science_expert \
+#   --save-every 500 \
+#   --steps-per-eval 200 \
+#   --val-batches 25 \
+#   --max-seq-length 2048 \
+#   --seed 42

@@ -42,6 +42,7 @@ class LoRAManager:
         "code_debug": "python_coder",
         "code_explain": "python_coder",
         "code_math": "math_expert",  # Matematik uzmanı
+        "science": "science_expert",  # Bilim uzmanı
         "memory_recall": None,  # Base model kullan
         "general_knowledge": None,  # Base model kullan
     }
@@ -93,6 +94,10 @@ class LoRAManager:
             "math_expert": {
                 "intent": "code_math",
                 "description": "Matematik problemleri çözme uzmanı"
+            },
+            "science_expert": {
+                "intent": "science",
+                "description": "Fizik, kimya, biyoloji uzmanı"
             }
         }
         

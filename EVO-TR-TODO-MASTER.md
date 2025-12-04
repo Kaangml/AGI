@@ -439,12 +439,31 @@ tests/test_math_expert.py      # 22 test
 adapters/math_expert/          # Eğitilmiş adapter ✅
 ```
 
-### 7.2 Bilim Uzmanı (LoRA #4)
-- [ ] Bilim veri seti hazırla (fizik, kimya, biyoloji)
-- [ ] Türkçe bilim içerikleri topla
-- [ ] `adapters/science_expert/` LoRA eğit
-- [ ] Router'a `science_*` intent ekle
-- [ ] Unit testler yaz
+### 7.2 Bilim Uzmanı (LoRA #4) - **TAMAMLANDI** ✅
+- [x] Bilim veri seti hazırla (fizik, kimya, biyoloji) ✅ 11,679 örnek
+- [x] Türkçe bilim içerikleri topla ✅ 15 örnek
+- [x] Train/Val split oluştur ✅ 10,539/1,170
+- [x] Router'a `science` intent ekle ✅ 30 örnek
+- [x] Unit testler yaz ✅ 16 test + router testleri
+- [x] LoRA Manager'a science_expert ekle ✅
+- [x] Inference'a science system prompt ekle ✅
+- [x] `adapters/science_expert/` LoRA eğit ✅ **1500 iter, Val Loss 1.258**
+
+**Sonuçlar:**
+- **Val Loss:** 3.539 → 1.258 (64% iyileşme)
+- **Training Time:** ~40 dakika
+- **Peak Memory:** 8.6 GB
+- **Adapter Size:** 26.6 MB
+
+**Veri Seti:**
+```
+SciQ Dataset:
+├── Physics: 2,396
+├── Chemistry: 5,001
+├── Biology: 3,191
+└── General: 1,091
+Total: 11,679 + 15 Turkish = 11,694
+```
 
 ### 7.3 Tarih/Kültür Uzmanı (LoRA #5)
 - [ ] Türk tarihi veri seti hazırla
