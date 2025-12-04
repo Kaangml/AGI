@@ -408,16 +408,36 @@
 
 ---
 
-## ⬜ Faz 7: Gelişmiş Uzmanlar (More Experts)
+## 🔄 Faz 7: Gelişmiş Uzmanlar (More Experts)
 
 *Amaç: Yeni domain-specific LoRA adaptörleri eklemek*
 
-### 7.1 Matematik Uzmanı (LoRA #3)
-- [ ] Matematik veri seti hazırla (GSM8K, MATH)
-- [ ] Türkçe matematik problemleri ekle
-- [ ] `adapters/math_expert/` LoRA eğit
-- [ ] Router'a `code_math` intent ekle
-- [ ] Unit testler yaz
+### 7.1 Matematik Uzmanı (LoRA #3) - **DATA READY** ✅
+- [x] Matematik veri seti hazırla (GSM8K, MATH) ✅ 8,792 örnek
+- [x] Türkçe matematik problemleri ekle ✅ 48 örnek
+- [x] Train/Val split oluştur ✅ 6,768/753
+- [ ] `adapters/math_expert/` LoRA eğit ⏳ **NEXT**
+- [x] Router'a `code_math` intent ekle ✅
+- [x] Unit testler yaz ✅ 22 test
+
+**Hazırlanan Dosyalar:**
+```
+scripts/download_gsm8k.py      # GSM8K indirici
+scripts/prepare_math_data.py   # Veri birleştirici
+data/training/math/            # Tüm matematik verileri
+configs/lora_math_config.yaml  # LoRA konfigürasyonu
+tests/test_math_expert.py      # 22 test
+```
+
+**Training Komutu:**
+```bash
+mlx_lm.lora \
+  --model models/base/qwen-2.5-3b-instruct \
+  --data data/training/math \
+  --train \
+  --iters 2000 \
+  --adapter-path adapters/math_expert
+```
 
 ### 7.2 Bilim Uzmanı (LoRA #4)
 - [ ] Bilim veri seti hazırla (fizik, kimya, biyoloji)

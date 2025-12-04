@@ -573,12 +573,111 @@ report = pipeline.generate_improvement_report()
 
 | Metrik | Değer |
 |--------|-------|
-| Toplam Test | 93 |
-| Tamamlanan Faz | 6/6 |
-| Bekleyen Faz | 6 (7-12) |
+| Toplam Test | 115 |
+| Tamamlanan Faz | 6/6 + 7.1 (Data Ready) |
+| Bekleyen Faz | 5.5 (7-12) |
 | Git Repo Boyutu | ~300KB |
 | Base Model | Qwen-2.5-3B (1.6GB) |
-| Adapter'lar | 2 (tr_chat, python_coder) |
-| Intent Kategorisi | 7 |
+| Adapter'lar | 2 (tr_chat, python_coder) + 1 pending (math_expert) |
+| Intent Kategorisi | 8 |
+
+---
+
+# 🧠 Oturum 8 - FAZ 7 Matematik Uzmanı Başlangıcı
+**Tarih:** 2025-01-XX  
+**Amaç:** FAZ 7.1 Matematik Uzmanı için data hazırlık ve altyapı
+
+## ✅ Tamamlanan İşlemler
+
+### 1. GSM8K Dataset İndirme
+- `scripts/download_gsm8k.py` oluşturuldu
+- HuggingFace'den GSM8K indirildi:
+  - Train: 7,473 örnek
+  - Test: 1,319 örnek
+- Chat formatına dönüştürüldü (messages array)
+
+### 2. Türkçe Matematik Verileri
+- `data/training/math/turkish_math.jsonl` oluşturuldu
+- 48 adet Türkçe matematik problemi
+- Konu dağılımı:
+  - Temel aritmetik
+  - Cebir
+  - Geometri
+  - İstatistik
+  - Sözel problemler
+
+### 3. Router Güncellemesi
+- `configs/intent_mapping.json` v1.1'e güncellendi
+- Yeni intent: `code_math` → `adapter_math_expert`
+- 30 adet intent örneği eklendi (`data/intents/samples/code_math.json`)
+- Intent dataset yeniden oluşturuldu: 215 örnek
+
+### 4. LoRA Konfigürasyonu
+- `configs/lora_math_config.yaml` oluşturuldu
+- Parametreler:
+  - Rank: 16, Alpha: 32, Dropout: 0.1
+  - Batch: 2, LR: 1e-4
+  - İterasyon: 2000
+
+### 5. Veri Birleştirme
+- `scripts/prepare_math_data.py` oluşturuldu
+- Birleştirilmiş veri:
+  - Train: 6,768 örnek (GSM8K + TR)
+  - Val: 753 örnek
+
+### 6. Test Suite
+- `tests/test_math_expert.py` oluşturuldu
+- 22 test yazıldı ve tamamı geçti ✅
+
+## 📁 Yeni Dosyalar
+
+```
+scripts/
+  download_gsm8k.py      # GSM8K indirici
+  prepare_math_data.py   # Veri birleştirici
+
+data/training/math/
+  gsm8k_train.jsonl      # 7,473 örnek
+  gsm8k_test.jsonl       # 1,319 örnek
+  turkish_math.jsonl     # 48 örnek
+  math_combined_train.jsonl  # 6,768 örnek
+  math_combined_val.jsonl    # 753 örnek
+
+data/intents/samples/
+  code_math.json         # 30 intent örneği
+
+configs/
+  lora_math_config.yaml  # LoRA ayarları
+
+tests/
+  test_math_expert.py    # 22 test
+
+adapters/math_expert/    # (Boş, training bekliyor)
+```
+
+## 📊 Test Sonuçları
+```
+tests/test_math_expert.py::TestMathDatasetExists       ✅ 3/3
+tests/test_math_expert.py::TestTurkishMathData         ✅ 3/3
+tests/test_math_expert.py::TestGSM8KFormat             ✅ 3/3
+tests/test_math_expert.py::TestMathIntentMapping       ✅ 4/4
+tests/test_math_expert.py::TestLoRAMathConfig          ✅ 4/4
+tests/test_math_expert.py::TestMathDatasetIntegration  ✅ 3/3
+tests/test_math_expert.py::TestIntentDatasetWithMath   ✅ 2/2
+─────────────────────────────────────────────────────────
+TOTAL: 22 passed ✅
+```
+
+## 🔮 Sonraki Adımlar
+
+### Hemen (Bu Oturum veya Sonraki)
+1. [ ] LoRA training başlat: `mlx_lm.lora --model ... --data data/training/math --train`
+2. [ ] Training sonuçlarını doğrula
+3. [ ] Math adapter'ı test et
+
+### Sonraki Fazlar
+1. [ ] FAZ 7.2: Bilim Uzmanı
+2. [ ] FAZ 7.3: Tarih Uzmanı
+3. [ ] FAZ 8: Web Arayüzü
 
 ---

@@ -1,0 +1,122 @@
+[
+    {
+        "text": "Bu matematik problemini çözer misin?",
+        "intent": "code_math"
+    },
+    {
+        "text": "3x + 5 = 20 denklemini çöz",
+        "intent": "code_math"
+    },
+    {
+        "text": "Bir dikdörtgenin alanı nasıl hesaplanır?",
+        "intent": "code_math"
+    },
+    {
+        "text": "125'in karekökü kaçtır?",
+        "intent": "code_math"
+    },
+    {
+        "text": "Yüzde hesaplama yapabilir misin?",
+        "intent": "code_math"
+    },
+    {
+        "text": "Faiz hesabı nasıl yapılır?",
+        "intent": "code_math"
+    },
+    {
+        "text": "Pisagor teoremi nedir?",
+        "intent": "code_math"
+    },
+    {
+        "text": "İki sayının EBOB'unu bul",
+        "intent": "code_math"
+    },
+    {
+        "text": "Faktöriyel hesapla",
+        "intent": "code_math"
+    },
+    {
+        "text": "Bir üçgenin alanını hesapla",
+        "intent": "code_math"
+    },
+    {
+        "text": "Oran orantı problemi çöz",
+        "intent": "code_math"
+    },
+    {
+        "text": "Basit faiz formülü nedir?",
+        "intent": "code_math"
+    },
+    {
+        "text": "Silindir hacmi nasıl bulunur?",
+        "intent": "code_math"
+    },
+    {
+        "text": "24 ile 36'nın EKOK'u kaçtır?",
+        "intent": "code_math"
+    },
+    {
+        "text": "Bir sayının %20'si 50 ise sayı kaçtır?",
+        "intent": "code_math"
+    },
+    {
+        "text": "Ardışık sayılar toplamı formülü",
+        "intent": "code_math"
+    },
+    {
+        "text": "Daire çevresi nasıl hesaplanır?",
+        "intent": "code_math"
+    },
+    {
+        "text": "Negatif sayılarla işlem yap",
+        "intent": "code_math"
+    },
+    {
+        "text": "Kesirlerle toplama çıkarma",
+        "intent": "code_math"
+    },
+    {
+        "text": "Üslü sayıları çarp",
+        "intent": "code_math"
+    },
+    {
+        "text": "Ortalama hesapla",
+        "intent": "code_math"
+    },
+    {
+        "text": "Birinci dereceden denklem çöz",
+        "intent": "code_math"
+    },
+    {
+        "text": "Hız zaman yol problemi",
+        "intent": "code_math"
+    },
+    {
+        "text": "Ters orantı problemi çöz",
+        "intent": "code_math"
+    },
+    {
+        "text": "Kar zarar hesaplama",
+        "intent": "code_math"
+    },
+    {
+        "text": "Ali'nin 48 bilyesi var, yarısını verirse kaç kalır?",
+        "intent": "code_math"
+    },
+    {
+        "text": "Bir işi 5 işçi 12 günde bitiriyor, 3 işçi kaç günde bitirir?",
+        "intent": "code_math"
+    },
+    {
+        "text": "Çemberin alanı formülü nedir?",
+        "intent": "code_math"
+    },
+    {
+        "text": "İkinci dereceden denklem nasıl çözülür?",
+        "intent": "code_math"
+    },
+    {
+        "text": "Kombinasyon permütasyon farkı nedir?",
+        "intent": "code_math"
+    }
+]

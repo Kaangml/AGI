@@ -17,6 +17,7 @@ def load_samples(samples_dir: str) -> dict:
         "code_python.txt": "code_python",
         "code_debug.txt": "code_debug",
         "code_explain.txt": "code_explain",
+        "code_math.json": "code_math",
         "memory_recall.txt": "memory_recall",
         "general_knowledge.txt": "general_knowledge"
     }
@@ -24,15 +25,28 @@ def load_samples(samples_dir: str) -> dict:
     for filename, intent in intent_mapping.items():
         filepath = samples_path / filename
         if filepath.exists():
-            with open(filepath, 'r', encoding='utf-8') as f:
-                lines = [line.strip() for line in f if line.strip()]
-                for text in lines:
-                    intents.append({
-                        "text": text,
-                        "intent": intent,
-                        "language": "tr"
-                    })
-            print(f"✅ {filename}: {len(lines)} örnek yüklendi")
+            if filename.endswith('.json'):
+                # JSON formatı
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    for item in data:
+                        intents.append({
+                            "text": item["text"],
+                            "intent": item["intent"],
+                            "language": "tr"
+                        })
+                print(f"✅ {filename}: {len(data)} örnek yüklendi")
+            else:
+                # TXT formatı
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    lines = [line.strip() for line in f if line.strip()]
+                    for text in lines:
+                        intents.append({
+                            "text": text,
+                            "intent": intent,
+                            "language": "tr"
+                        })
+                print(f"✅ {filename}: {len(lines)} örnek yüklendi")
         else:
             print(f"⚠️ {filename} bulunamadı")
     

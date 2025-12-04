@@ -1,0 +1,36 @@
+# Math Expert LoRA Training Configuration
+# For GSM8K + Turkish math problems
+
+# Model
+model: "models/base/qwen-2.5-3b-instruct"
+adapter_path: "adapters/math_expert"
+
+# LoRA hyperparameters
+lora_layers: 16
+lora_rank: 8
+lora_alpha: 16
+lora_dropout: 0.05
+
+# Training
+train: true
+batch_size: 2
+iters: 1500
+learning_rate: 1e-4
+warmup_ratio: 0.1
+
+# Validation
+val_batches: 25
+steps_per_eval: 100
+steps_per_save: 500
+
+# Data
+data: "data/training/math"
+train_file: "math_combined_train.jsonl"
+valid_file: "math_combined_val.jsonl"
+
+# Memory optimization for M4
+gradient_checkpointing: true
+max_seq_length: 2048
+
+# Seed for reproducibility
+seed: 42
