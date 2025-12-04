@@ -17,7 +17,7 @@ class IntentClassifier:
     
     def __init__(
         self,
-        model_path: str = "./models/router/sentence_transformer",
+        model_path: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
         dataset_path: str = "./data/intents/intent_dataset.json",
         mapping_path: str = "./configs/intent_mapping.json"
     ):
@@ -25,7 +25,7 @@ class IntentClassifier:
         Intent sınıflandırıcıyı başlat.
         
         Args:
-            model_path: Sentence transformer model dizini
+            model_path: Sentence transformer model adı (HuggingFace Hub)
             dataset_path: Intent veri seti yolu
             mapping_path: Intent-adapter mapping dosyası
         """

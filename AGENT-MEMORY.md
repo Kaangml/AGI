@@ -681,3 +681,116 @@ TOTAL: 22 passed ✅
 3. [ ] FAZ 8: Web Arayüzü
 
 ---
+
+# 📝 Kod Review & Technical Debt Analizi
+**Tarih:** 2025-12-04  
+**Amaç:** FAZ 7 training sırasında yapılan kod incelemesi
+
+## ✅ İyi Yönler
+
+### 1. Modüler Yapı
+- `orchestrator.py`: Tüm bileşenleri temiz bir şekilde birleştiriyor
+- Router, Memory, Inference ayrı modüller olarak iyi organize
+- Dependency injection kullanılmış
+
+### 2. Kod Kalitesi
+- Docstring'ler yeterli ve Türkçe
+- Type hints kullanılmış
+- Dataclass'lar doğru kullanılmış
+- Error handling mevcut
+
+### 3. Test Coverage
+- 115+ test var (93 FAZ 0-6 + 22 math_expert)
+- Unit test yapısı iyi
+- pytest fixtures kullanılmış
+
+## ⚠️ İyileştirme Önerileri
+
+### P1 - Kritik (Training Sonrası)
+1. **LoRA Manager Registry Güncelleme**
+   - `math_expert` adapter config'e eklenmeli
+   - `ADAPTER_REGISTRY`'e `code_math` eklenmeli
+   ```python
+   ADAPTER_REGISTRY = {
+       ...
+       "code_math": "math_expert",  # EKLENMELİ
+   }
+   ```
+
+2. **Inference System Prompt**
+   - `code_math` için system prompt eklenmeli
+   ```python
+   SYSTEM_PROMPTS = {
+       ...
+       "code_math": "Sen matematik problemleri çözen uzman bir asistansın...",
+   }
+   ```
+
+### P2 - Orta Öncelik
+1. **Intent Sample Dengesizliği**
+   - `code_math`: 30 örnek
+   - `general_chat`: ~50 örnek
+   - `code_python`: ~40 örnek
+   - Dengeli veri seti için intent başına 40-50 örnek hedeflenmeli
+
+2. **Caching İyileştirmesi**
+   - Adapter cache TTL eklenebilir
+   - Memory pressure handling geliştirilebilir
+
+3. **Logging Standardizasyonu**
+   - `print()` yerine `logging` modülü kullanılabilir
+   - Log levels: DEBUG, INFO, WARNING, ERROR
+
+### P3 - Düşük Öncelik
+1. **Config Merkezi**
+   - Tüm config'ler `configs/` altında birleştirilebilir
+   - Environment variable desteği eklenebilir
+
+2. **Metrics & Monitoring**
+   - Prometheus metrics eklenebilir
+   - Generation latency, memory usage tracking
+
+## 🔧 Training Sonrası Yapılacaklar
+
+1. [x] LoRA Manager'a math_expert ekle ✅ (ADAPTER_REGISTRY + adapter_configs)
+2. [x] Inference'a code_math system prompt ekle ✅
+3. [x] intent_mapping.json güncellendi ✅ (code_math: adapter_math_expert)
+4. [x] Router test'leri güncelle (8 intent) ✅
+5. [x] Training tamamlandı ✅
+6. [x] Entegrasyon testleri çalıştırıldı ✅ 116/116 PASSED
+
+## 📊 Training TAMAMLANDI! ✅
+- **Başlangıç:** 2025-12-04 10:48
+- **Bitiş:** 2025-12-04 11:48
+- **Süre:** ~60 dakika
+- **Model:** Qwen-2.5-3B-Instruct + LoRA
+- **Data:** GSM8K + Turkish Math (6768 train, 753 valid)
+- **Config:** 1500 iter, batch=2, lr=1e-4, 16 layers
+
+### Final Training Results:
+| Metric | Value |
+|--------|-------|
+| Initial Val Loss | 1.969 |
+| Final Val Loss | 0.512 (iter 1400) |
+| Final Train Loss | 0.529 |
+| Total Tokens | 706,803 |
+| Peak Memory | 7.2 GB |
+| Tokens/sec | ~210-220 |
+
+### Adapter Files:
+```
+adapters/math_expert/
+├── adapter_config.json (934 bytes)
+├── adapters.safetensors (26.6 MB) ✅
+├── 0000500_adapters.safetensors
+├── 0001000_adapters.safetensors
+└── 0001500_adapters.safetensors
+```
+
+### Test Results:
+- **Math Expert Tests:** ✅ Çalışıyor (15-7=8, 3x=24→x=8, vb.)
+- **Router Tests:** 16/16 passed
+- **All Tests:** 116/116 passed
+
+---
+

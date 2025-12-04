@@ -55,7 +55,7 @@ class EvoTR:
         self,
         base_model_path: str = "./models/base/qwen-2.5-3b-instruct",
         adapters_dir: str = "./adapters",
-        router_model_path: str = "./models/router/sentence_transformer",
+        router_model_path: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
         intents_path: str = "./data/intents",
         chromadb_path: str = None,
         memory_path: str = "./data/chromadb/evo_main",

@@ -29,7 +29,7 @@ class TestRouterIntegration:
     def router(self):
         """Router instance."""
         return IntentClassifier(
-            model_path="./models/router/sentence_transformer",
+            model_path="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
             dataset_path="./data/intents/intent_dataset.json",
             mapping_path="./configs/intent_mapping.json"
         )

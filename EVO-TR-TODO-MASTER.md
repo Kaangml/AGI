@@ -412,13 +412,22 @@
 
 *Amaç: Yeni domain-specific LoRA adaptörleri eklemek*
 
-### 7.1 Matematik Uzmanı (LoRA #3) - **DATA READY** ✅
+### 7.1 Matematik Uzmanı (LoRA #3) - **TAMAMLANDI** ✅
 - [x] Matematik veri seti hazırla (GSM8K, MATH) ✅ 8,792 örnek
 - [x] Türkçe matematik problemleri ekle ✅ 48 örnek
 - [x] Train/Val split oluştur ✅ 6,768/753
-- [ ] `adapters/math_expert/` LoRA eğit ⏳ **NEXT**
 - [x] Router'a `code_math` intent ekle ✅
 - [x] Unit testler yaz ✅ 22 test
+- [x] LoRA Manager'a math_expert ekle ✅
+- [x] Inference'a code_math system prompt ekle ✅
+- [x] `adapters/math_expert/` LoRA eğit ✅ **1500 iter, Val Loss: 0.512**
+- [x] Entegrasyon testi ✅ **116/116 passed**
+
+**Sonuçlar:**
+- **Val Loss:** 1.969 → 0.512 (74% iyileşme)
+- **Training Time:** ~60 dakika
+- **Peak Memory:** 7.2 GB
+- **Adapter Size:** 26.6 MB
 
 **Hazırlanan Dosyalar:**
 ```
@@ -427,16 +436,7 @@ scripts/prepare_math_data.py   # Veri birleştirici
 data/training/math/            # Tüm matematik verileri
 configs/lora_math_config.yaml  # LoRA konfigürasyonu
 tests/test_math_expert.py      # 22 test
-```
-
-**Training Komutu:**
-```bash
-mlx_lm.lora \
-  --model models/base/qwen-2.5-3b-instruct \
-  --data data/training/math \
-  --train \
-  --iters 2000 \
-  --adapter-path adapters/math_expert
+adapters/math_expert/          # Eğitilmiş adapter ✅
 ```
 
 ### 7.2 Bilim Uzmanı (LoRA #4)

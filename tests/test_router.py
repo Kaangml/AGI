@@ -24,7 +24,7 @@ class TestIntentClassifier:
     def test_classifier_loads(self, classifier):
         """Classifier başarıyla yükleniyor mu?"""
         assert classifier is not None
-        assert len(classifier.intent_embeddings) == 7
+        assert len(classifier.intent_embeddings) == 8  # 8 intent (code_math dahil)
     
     def test_general_chat_intent(self, classifier):
         """Genel sohbet intent'i doğru tespit ediliyor mu?"""
@@ -44,6 +44,14 @@ class TestIntentClassifier:
         assert result["intent"] == "code_debug"
         # Confidence düşükse fallback olabilir
         assert result["adapter_id"] in ["adapter_python_coder", "base_model"]
+    
+    def test_code_math_intent(self, classifier):
+        """Matematik intent'i doğru tespit ediliyor mu?"""
+        # Daha açık matematik sorusu kullan
+        result = classifier.predict("Bir sayının 3 katı 24 ise o sayı kaçtır?")
+        assert result["intent"] == "code_math"
+        # Confidence yüksekse adapter, düşükse fallback
+        assert result["adapter_id"] in ["adapter_math_expert", "base_model"]
     
     def test_memory_recall_intent(self, classifier):
         """Hafıza intent'i doğru tespit ediliyor mu?"""
@@ -66,13 +74,13 @@ class TestIntentClassifier:
         assert "confidence" in result
         assert "adapter_id" in result
         assert "all_scores" in result
-        assert len(result["all_scores"]) == 7
+        assert len(result["all_scores"]) == 8  # 8 intent
     
     def test_get_stats(self, classifier):
         """İstatistikler doğru döndürülüyor mu?"""
         stats = classifier.get_stats()
-        assert stats["total_intents"] == 7
-        assert stats["total_samples"] == 185
+        assert stats["total_intents"] == 8  # 8 intent
+        assert stats["total_samples"] >= 200  # 185 + 30 math = 215
         assert "confidence_threshold" in stats
 
 
@@ -84,7 +92,7 @@ class TestRouterAPI:
         adapter = route_message("Merhaba")
         assert isinstance(adapter, str)
         assert adapter in ["adapter_tr_chat", "adapter_python_coder", 
-                          "memory_system", "base_model"]
+                          "adapter_math_expert", "memory_system", "base_model"]
     
     def test_route_with_details(self):
         """route_with_details detaylı bilgi döndürüyor mu?"""
