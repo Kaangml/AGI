@@ -35,12 +35,13 @@ class LoRAManager:
     """
     
     # Intent -> Adapter mapping
+    # V2 adaptörleri öncelikli kullanılıyor
     ADAPTER_REGISTRY = {
-        "general_chat": None,  # Base model kullan
-        "turkish_culture": "tr_chat",
-        "code_python": "python_coder",
-        "code_debug": "python_coder",
-        "code_explain": "python_coder",
+        "general_chat": "tr_chat_v2",  # V2 Türkçe sohbet
+        "turkish_culture": "tr_chat_v2",  # V2 Türkçe sohbet
+        "code_python": "python_coder_v2",  # V2 Python
+        "code_debug": "python_coder_v2",   # V2 Python
+        "code_explain": "python_coder_v2", # V2 Python
         "code_math": "math_expert",  # Matematik uzmanı
         "science": "science_expert",  # Bilim uzmanı
         "history": "history_expert",  # Tarih uzmanı
@@ -84,13 +85,23 @@ class LoRAManager:
             return
         
         adapter_configs = {
+            # V2 Adaptörler (öncelikli)
+            "tr_chat_v2": {
+                "intent": "general_chat",
+                "description": "Türkçe sohbet V2 - Gemma 3 27B verisi ile eğitildi"
+            },
+            "python_coder_v2": {
+                "intent": "code_python",
+                "description": "Python kod V2 - Gemma 3 27B verisi ile eğitildi"
+            },
+            # V1 Adaptörler (yedek)
             "tr_chat": {
                 "intent": "turkish_culture",
-                "description": "Türkçe sohbet ve kültür uzmanı"
+                "description": "Türkçe sohbet V1"
             },
             "python_coder": {
                 "intent": "code_python",
-                "description": "Python kod yazma ve debug uzmanı"
+                "description": "Python kod yazma V1"
             },
             "math_expert": {
                 "intent": "code_math",
@@ -99,6 +110,10 @@ class LoRAManager:
             "science_expert": {
                 "intent": "science",
                 "description": "Fizik, kimya, biyoloji uzmanı"
+            },
+            "history_expert": {
+                "intent": "history",
+                "description": "Tarih ve tarihi olaylar uzmanı"
             }
         }
         

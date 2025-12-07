@@ -222,6 +222,107 @@
             margin-left: 0.5rem;
         }
 
+        .edit-btn {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .edit-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        /* Correction Modal */
+        .correction-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .correction-modal-content {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .correction-modal-content h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .correction-modal-content .original-response {
+            background: var(--bg-light);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+
+        .correction-modal-content textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-light);
+            color: var(--text);
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        .correction-modal-content textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .modal-buttons button {
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .modal-buttons .submit-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .modal-buttons .submit-btn:hover {
+            background: #2563eb;
+        }
+
+        .modal-buttons .cancel-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .modal-buttons .cancel-btn:hover {
+            background: var(--bg-light);
+        }
+
         /* Input Area */
         .input-area {
             padding: 1rem 1.5rem;
@@ -398,6 +499,11 @@
     <header class="header">
         <h1>🤖 EVO-TR</h1>
         <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <a href="/monitor"
+                style="color: var(--text-muted); text-decoration: none; font-size: 0.875rem; display: flex; align-items: center; gap: 0.375rem;"
+                title="Sistem Monitörü">
+                📊 Monitor
+            </a>
             <div class="toggle-container">
                 <span>SSE</span>
                 <div class="toggle" id="wsToggle" title="WebSocket mode"></div>
@@ -637,6 +743,7 @@
                 <div class="feedback-buttons" data-message-id="${messageId}" style="display:none;">
                     <button class="feedback-btn thumbs-up" onclick="sendFeedback('${messageId}', 'thumbs_up', this)" title="Beğendim">👍</button>
                     <button class="feedback-btn thumbs-down" onclick="sendFeedback('${messageId}', 'thumbs_down', this)" title="Beğenmedim">👎</button>
+                    <button class="feedback-btn edit-btn" onclick="showCorrectionModal('${messageId}')" title="Düzelt">✏️</button>
                 </div>
             `;
             messagesEl.appendChild(assistantDiv);
@@ -716,6 +823,7 @@
                 <div class="feedback-buttons" data-message-id="${messageId}" style="display:none;">
                     <button class="feedback-btn thumbs-up" onclick="sendFeedback('${messageId}', 'thumbs_up', this)" title="Beğendim">👍</button>
                     <button class="feedback-btn thumbs-down" onclick="sendFeedback('${messageId}', 'thumbs_down', this)" title="Beğenmedim">👎</button>
+                    <button class="feedback-btn edit-btn" onclick="showCorrectionModal('${messageId}')" title="Düzelt">✏️</button>
                 </div>
             `;
             messagesEl.appendChild(assistantDiv);
@@ -881,6 +989,77 @@
                 }
             } catch (error) {
                 console.error('Feedback error:', error);
+            }
+        }
+
+        // Show correction modal for edit feedback
+        function showCorrectionModal(messageId) {
+            const msgData = messageHistory.get(messageId);
+            if (!msgData) {
+                console.error('Message data not found for:', messageId);
+                return;
+            }
+
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = 'correction-modal';
+            modal.innerHTML = `
+                <div class="correction-modal-content">
+                    <h3>✏️ Yanıtı Düzelt</h3>
+                    <p><strong>Soru:</strong> ${msgData.userMessage}</p>
+                    <p><strong>Mevcut Yanıt:</strong></p>
+                    <div class="original-response">${msgData.assistantResponse}</div>
+                    <p><strong>Doğru Yanıt:</strong></p>
+                    <textarea id="correctedResponse" placeholder="Doğru yanıtı buraya yazın...">${msgData.assistantResponse}</textarea>
+                    <div class="modal-buttons">
+                        <button onclick="submitCorrection('${messageId}')" class="submit-btn">Kaydet</button>
+                        <button onclick="closeModal()" class="cancel-btn">İptal</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function closeModal() {
+            const modal = document.querySelector('.correction-modal');
+            if (modal) modal.remove();
+        }
+
+        async function submitCorrection(messageId) {
+            const msgData = messageHistory.get(messageId);
+            const correctedText = document.getElementById('correctedResponse').value;
+
+            if (!correctedText || correctedText === msgData.assistantResponse) {
+                alert('Lütfen yanıtı düzeltin');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/feedback/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message_id: messageId,
+                        user_message: msgData.userMessage,
+                        assistant_response: msgData.assistantResponse,
+                        feedback_type: 'edit',
+                        intent: msgData.intent,
+                        adapter_used: msgData.adapter,
+                        corrected_response: correctedText
+                    })
+                });
+
+                if (response.ok) {
+                    closeModal();
+                    // Update feedback buttons
+                    const container = document.querySelector(`[data-message-id="${messageId}"]`);
+                    if (container) {
+                        container.innerHTML = '<span class="feedback-sent">✏️ Düzeltme kaydedildi!</span>';
+                    }
+                }
+            } catch (error) {
+                console.error('Correction error:', error);
+                alert('Hata: ' + error.message);
             }
         }
 

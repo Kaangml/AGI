@@ -549,6 +549,194 @@ async def get_feedback_stats():
     return stats
 
 
+# ============== Monitoring Endpoints ==============
+
+@app.get("/monitor/stats")
+async def get_monitor_stats():
+    """Get comprehensive monitoring statistics."""
+    import psutil
+    import sqlite3
+    from datetime import datetime
+    
+    stats = {
+        "timestamp": datetime.now().isoformat(),
+        "server": {},
+        "feedback": {},
+        "memory": {},
+        "adapters": [],
+        "conversations": {}
+    }
+    
+    # Server stats
+    process = psutil.Process()
+    stats["server"] = {
+        "status": "running",
+        "uptime_seconds": round(state.get_uptime(), 2),
+        "process_memory_mb": round(process.memory_info().rss / (1024 * 1024), 2),
+        "cpu_percent": process.cpu_percent(),
+        "model_loaded": state.model_loaded,
+        "active_websockets": len(state.active_connections)
+    }
+    
+    # System memory
+    mem = psutil.virtual_memory()
+    stats["memory"] = {
+        "total_gb": round(mem.total / (1024**3), 2),
+        "used_gb": round(mem.used / (1024**3), 2),
+        "available_gb": round(mem.available / (1024**3), 2),
+        "percent": mem.percent
+    }
+    
+    # Feedback stats
+    feedback_db_path = Path("./data/feedback.db")
+    if feedback_db_path.exists():
+        try:
+            conn = sqlite3.connect(str(feedback_db_path))
+            cursor = conn.cursor()
+            
+            # Total feedback
+            cursor.execute("SELECT COUNT(*) FROM feedback")
+            total = cursor.fetchone()[0]
+            
+            # By type
+            cursor.execute("""
+                SELECT feedback_type, COUNT(*) 
+                FROM feedback 
+                GROUP BY feedback_type
+            """)
+            by_type = dict(cursor.fetchall())
+            
+            # Corrections
+            cursor.execute("""
+                SELECT COUNT(*) FROM feedback 
+                WHERE corrected_response IS NOT NULL AND corrected_response != ''
+            """)
+            corrections = cursor.fetchone()[0]
+            
+            # Unprocessed
+            cursor.execute("SELECT COUNT(*) FROM feedback WHERE processed = 0")
+            unprocessed = cursor.fetchone()[0]
+            
+            # Used for training
+            cursor.execute("SELECT COUNT(*) FROM feedback WHERE used_for_training = 1")
+            trained = cursor.fetchone()[0]
+            
+            # Recent feedback
+            cursor.execute("""
+                SELECT id, feedback_type, user_message, timestamp 
+                FROM feedback 
+                ORDER BY timestamp DESC 
+                LIMIT 10
+            """)
+            recent = []
+            for row in cursor.fetchall():
+                recent.append({
+                    "id": row[0][:8] if row[0] else "",
+                    "type": row[1],
+                    "message": (row[2][:50] + "...") if row[2] and len(row[2]) > 50 else row[2],
+                    "timestamp": row[3]
+                })
+            
+            conn.close()
+            
+            stats["feedback"] = {
+                "total": total,
+                "by_type": by_type,
+                "corrections": corrections,
+                "unprocessed": unprocessed,
+                "trained": trained,
+                "training_threshold": 10,
+                "ready_for_training": corrections >= 10,
+                "recent": recent
+            }
+        except Exception as e:
+            stats["feedback"] = {"error": str(e)}
+    
+    # Adapters
+    adapters_dir = Path("./adapters")
+    if adapters_dir.exists():
+        for adapter_path in adapters_dir.iterdir():
+            if adapter_path.is_dir() and not adapter_path.name.startswith('.'):
+                config_file = adapter_path / "adapter_config.json"
+                size_mb = sum(f.stat().st_size for f in adapter_path.rglob('*') if f.is_file()) / (1024*1024)
+                stats["adapters"].append({
+                    "name": adapter_path.name,
+                    "valid": config_file.exists(),
+                    "size_mb": round(size_mb, 2),
+                    "is_v2": "v2" in adapter_path.name
+                })
+    
+    # Conversation stats (from logs)
+    logs_dir = Path("./logs/conversations")
+    if logs_dir.exists():
+        total_conversations = 0
+        today_conversations = 0
+        today = datetime.now().strftime("%Y-%m-%d")
+        
+        for log_file in logs_dir.glob("*.jsonl"):
+            if today in log_file.name:
+                with open(log_file, "r") as f:
+                    today_conversations = sum(1 for _ in f)
+            with open(log_file, "r") as f:
+                total_conversations += sum(1 for _ in f)
+        
+        stats["conversations"] = {
+            "total": total_conversations,
+            "today": today_conversations
+        }
+    else:
+        # Try main logs directory
+        main_log = Path(f"./logs/conversations_{datetime.now().strftime('%Y-%m-%d')}.jsonl")
+        if main_log.exists():
+            with open(main_log, "r") as f:
+                today_count = sum(1 for _ in f)
+            stats["conversations"] = {"today": today_count, "total": today_count}
+        else:
+            stats["conversations"] = {"today": 0, "total": 0}
+    
+    return stats
+
+
+@app.get("/monitor", response_class=HTMLResponse)
+async def monitor_dashboard():
+    """Serve monitoring dashboard."""
+    dashboard_path = Path(__file__).parent / "static" / "monitor.html"
+    if dashboard_path.exists():
+        return dashboard_path.read_text(encoding="utf-8")
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head><title>EVO-TR Monitor</title></head>
+    <body>
+        <h1>🖥️ EVO-TR Monitor</h1>
+        <p>Dashboard file not found. Please create static/monitor.html</p>
+    </body>
+    </html>
+    """
+
+
+@app.post("/monitor/train")
+async def trigger_training():
+    """Trigger training manually."""
+    import subprocess
+    import sys
+    
+    try:
+        result = subprocess.run(
+            [sys.executable, "./scripts/process_feedback.py", "--train"],
+            capture_output=True,
+            text=True,
+            timeout=300
+        )
+        return {
+            "success": result.returncode == 0,
+            "stdout": result.stdout,
+            "stderr": result.stderr
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============== Static Files ==============
 
 # Mount static files if directory exists

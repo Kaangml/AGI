@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EVO-TR Monitor</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --bg-card: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--bg-light);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--bg-light);
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-success {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-icon {
+            font-size: 1.25rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-online {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--success);
+        }
+
+        .status-offline {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.75rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .progress-success {
+            background: var(--success);
+        }
+
+        .progress-warning {
+            background: var(--warning);
+        }
+
+        .progress-danger {
+            background: var(--danger);
+        }
+
+        .progress-primary {
+            background: var(--primary);
+        }
+
+        .feedback-types {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .feedback-type {
+            text-align: center;
+            flex: 1;
+        }
+
+        .feedback-type-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .feedback-type-count {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .feedback-type-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        td {
+            font-size: 0.875rem;
+        }
+
+        .adapter-badge {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            background: var(--bg);
+        }
+
+        .adapter-v2 {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--primary);
+        }
+
+        .refresh-indicator {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chat-link {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .chat-link:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.75rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .training-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .training-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .nav-tab {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover {
+            color: var(--text);
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <h1>🖥️ EVO-TR Monitor</h1>
+        <div class="header-actions">
+            <div class="auto-refresh">
+                <input type="checkbox" id="autoRefresh" checked>
+                <label for="autoRefresh">Otomatik yenile</label>
+                <span class="refresh-indicator" id="lastUpdate">-</span>
+            </div>
+            <button class="btn" onclick="refreshData()">🔄 Yenile</button>
+            <a href="/" class="btn">💬 Chat</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Status Cards -->
+        <div class="grid">
+            <!-- Server Status -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Server Durumu</span>
+                    <span class="card-icon">🌐</span>
+                </div>
+                <div id="serverStatus">
+                    <span class="status-badge status-online">
+                        <span class="status-dot"></span>
+                        Çalışıyor
+                    </span>
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-muted);">
+                    <div>Uptime: <span id="uptime">-</span></div>
+                    <div>Bellek: <span id="processMemory">-</span> MB</div>
+                    <div>WebSocket: <span id="wsCount">-</span> bağlantı</div>
+                </div>
+            </div>
+
+            <!-- System Memory -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Sistem Belleği</span>
+                    <span class="card-icon">💾</span>
+                </div>
+                <div class="stat-value" id="memoryPercent">--%</div>
+                <div class="stat-label" id="memoryDetail">- / - GB</div>
+                <div class="progress-bar">
+                    <div class="progress-fill progress-success" id="memoryBar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Feedback Stats -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Feedback</span>
+                    <span class="card-icon">📊</span>
+                </div>
+                <div class="stat-value" id="totalFeedback">-</div>
+                <div class="stat-label">toplam feedback</div>
+                <div class="feedback-types">
+                    <div class="feedback-type">
+                        <div class="feedback-type-icon">👍</div>
+                        <div class="feedback-type-count" id="thumbsUp">-</div>
+                        <div class="feedback-type-label">Beğeni</div>
+                    </div>
+                    <div class="feedback-type">
+                        <div class="feedback-type-icon">👎</div>
+                        <div class="feedback-type-count" id="thumbsDown">-</div>
+                        <div class="feedback-type-label">Olumsuz</div>
+                    </div>
+                    <div class="feedback-type">
+                        <div class="feedback-type-icon">✏️</div>
+                        <div class="feedback-type-count" id="corrections">-</div>
+                        <div class="feedback-type-label">Düzeltme</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Training Status -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Eğitim Durumu</span>
+                    <span class="card-icon">🎓</span>
+                </div>
+                <div id="trainingStatus">
+                    <span class="status-badge status-warning">
+                        <span class="status-dot"></span>
+                        Veri toplanıyor
+                    </span>
+                </div>
+                <div style="margin-top: 0.75rem;">
+                    <div class="stat-label">Düzeltme: <span id="correctionCount">-</span> / 10</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-primary" id="trainingBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="training-section">
+                    <button class="btn btn-primary" onclick="triggerTraining()" id="trainBtn">
+                        🚀 Eğitimi Başlat
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Adapters Section -->
+        <div class="card" style="margin-bottom: 1rem;">
+            <div class="section-title">🔌 Adaptörler</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Adaptör</th>
+                            <th>Boyut</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adaptersTable">
+                        <tr>
+                            <td colspan="3" class="loading">
+                                <div class="spinner"></div>Yükleniyor...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recent Feedback -->
+        <div class="card">
+            <div class="section-title">🕒 Son Feedback'ler</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tür</th>
+                            <th>Mesaj</th>
+                            <th>Zaman</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feedbackTable">
+                        <tr>
+                            <td colspan="4" class="loading">
+                                <div class="spinner"></div>Yükleniyor...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+        let autoRefreshInterval = null;
+
+        async function fetchStats() {
+            try {
+                const response = await fetch(`${API_URL}/monitor/stats`);
+                const data = await response.json();
+                updateUI(data);
+            } catch (error) {
+                console.error('Error fetching stats:', error);
+            }
+        }
+
+        function updateUI(data) {
+            // Last update
+            document.getElementById('lastUpdate').textContent =
+                new Date().toLocaleTimeString('tr-TR');
+
+            // Server status
+            if (data.server) {
+                const uptime = formatUptime(data.server.uptime_seconds);
+                document.getElementById('uptime').textContent = uptime;
+                document.getElementById('processMemory').textContent =
+                    data.server.process_memory_mb?.toFixed(1) || '-';
+                document.getElementById('wsCount').textContent =
+                    data.server.active_websockets || 0;
+            }
+
+            // Memory
+            if (data.memory) {
+                const percent = data.memory.percent;
+                document.getElementById('memoryPercent').textContent = `${percent}%`;
+                document.getElementById('memoryDetail').textContent =
+                    `${data.memory.used_gb.toFixed(1)} / ${data.memory.total_gb.toFixed(1)} GB`;
+
+                const bar = document.getElementById('memoryBar');
+                bar.style.width = `${percent}%`;
+                bar.className = 'progress-fill ' +
+                    (percent > 90 ? 'progress-danger' : percent > 70 ? 'progress-warning' : 'progress-success');
+            }
+
+            // Feedback
+            if (data.feedback && !data.feedback.error) {
+                document.getElementById('totalFeedback').textContent = data.feedback.total || 0;
+                document.getElementById('thumbsUp').textContent =
+                    data.feedback.by_type?.thumbs_up || 0;
+                document.getElementById('thumbsDown').textContent =
+                    data.feedback.by_type?.thumbs_down || 0;
+                document.getElementById('corrections').textContent =
+                    data.feedback.corrections || 0;
+
+                // Training progress
+                const corrections = data.feedback.corrections || 0;
+                const threshold = data.feedback.training_threshold || 10;
+                document.getElementById('correctionCount').textContent = corrections;
+                document.getElementById('trainingBar').style.width =
+                    `${Math.min(100, (corrections / threshold) * 100)}%`;
+
+                // Training status
+                const trainStatus = document.getElementById('trainingStatus');
+                const trainBtn = document.getElementById('trainBtn');
+                if (data.feedback.ready_for_training) {
+                    trainStatus.innerHTML = `
+                        <span class="status-badge status-online">
+                            <span class="status-dot"></span>
+                            Eğitime hazır!
+                        </span>`;
+                    trainBtn.disabled = false;
+                } else {
+                    trainStatus.innerHTML = `
+                        <span class="status-badge status-warning">
+                            <span class="status-dot"></span>
+                            ${threshold - corrections} düzeltme daha gerekli
+                        </span>`;
+                    trainBtn.disabled = true;
+                }
+
+                // Recent feedback table
+                updateFeedbackTable(data.feedback.recent || []);
+            }
+
+            // Adapters
+            if (data.adapters) {
+                updateAdaptersTable(data.adapters);
+            }
+        }
+
+        function updateFeedbackTable(feedbacks) {
+            const tbody = document.getElementById('feedbackTable');
+            if (feedbacks.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">Henüz feedback yok</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = feedbacks.map(fb => {
+                const icon = fb.type === 'thumbs_up' ? '👍' :
+                    fb.type === 'thumbs_down' ? '👎' :
+                        fb.type === 'correction' || fb.type === 'edit' ? '✏️' : '📝';
+                const time = fb.timestamp ? new Date(fb.timestamp).toLocaleString('tr-TR') : '-';
+                return `
+                    <tr>
+                        <td><code>${fb.id}</code></td>
+                        <td>${icon} ${fb.type}</td>
+                        <td>${fb.message || '-'}</td>
+                        <td style="color:var(--text-muted)">${time}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateAdaptersTable(adapters) {
+            const tbody = document.getElementById('adaptersTable');
+            if (adapters.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3">Adaptör bulunamadı</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = adapters.map(adapter => {
+                const badge = adapter.is_v2 ?
+                    '<span class="adapter-badge adapter-v2">V2</span>' :
+                    '<span class="adapter-badge">V1</span>';
+                const status = adapter.valid ?
+                    '<span style="color:var(--success)">✓ Geçerli</span>' :
+                    '<span style="color:var(--danger)">✗ Hatalı</span>';
+                return `
+                    <tr>
+                        <td>${adapter.name} ${badge}</td>
+                        <td>${adapter.size_mb.toFixed(1)} MB</td>
+                        <td>${status}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function formatUptime(seconds) {
+            if (!seconds) return '-';
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+
+            if (hours > 0) return `${hours}s ${minutes}dk`;
+            if (minutes > 0) return `${minutes}dk ${secs}s`;
+            return `${secs}s`;
+        }
+
+        async function triggerTraining() {
+            const btn = document.getElementById('trainBtn');
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Eğitim başlatılıyor...';
+
+            try {
+                const response = await fetch(`${API_URL}/monitor/train`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ Eğitim başarıyla tamamlandı!');
+                } else {
+                    alert('⚠️ Eğitim tamamlandı ama hatalar olabilir.\n\n' + result.stderr);
+                }
+            } catch (error) {
+                alert('❌ Eğitim başlatılamadı: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '🚀 Eğitimi Başlat';
+                refreshData();
+            }
+        }
+
+        function refreshData() {
+            fetchStats();
+        }
+
+        function toggleAutoRefresh() {
+            const checkbox = document.getElementById('autoRefresh');
+            if (checkbox.checked) {
+                autoRefreshInterval = setInterval(fetchStats, 5000);
+            } else {
+                clearInterval(autoRefreshInterval);
+            }
+        }
+
+        // Initialize
+        document.getElementById('autoRefresh').addEventListener('change', toggleAutoRefresh);
+        fetchStats();
+        autoRefreshInterval = setInterval(fetchStats, 5000);
+    </script>
+</body>
+
+</html>

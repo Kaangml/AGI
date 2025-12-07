@@ -138,3 +138,198 @@ max_seq_length: 512
 3. **Feedback Loop**
    - Kaliteli/kötü yanıtları işaretle
    - Haftalık analiz yap
+
+---
+
+## 🔬 Sistem Analizi (7 Aralık 2024 - 16:00)
+
+### Test Sonuçları
+
+#### Router Performansı
+| Mesaj | Intent | Güven | Durum |
+|-------|--------|-------|-------|
+| "Merhaba nasılsın" | general_chat | 87% | ✅ Doğru |
+| "Python liste oluştur" | code_python | 77% | ✅ Doğru |
+| "5+3 kaç eder" | code_math | 55% | ⚠️ Düşük güven |
+| "Osmanlı tarihi anlat" | turkish_culture | 83% | ⚠️ history olmalıydı |
+| "Fizik kanunları nedir" | science | 53% | ⚠️ Düşük güven |
+
+#### Adaptör Test Sonuçları
+- **V1 vs V2 karşılaştırması:** Aynı çıktılar üretiyorlar - beklenmedik!
+- **Olası sebep:** Aynı base model, benzer eğitim verisi
+
+#### Hafıza (Memory) Testi
+- ✅ Kısa süreli hafıza çalışıyor ("Benim adım Kaan" → hatırlandı)
+- ✅ RAG context ekleniyor (233-660 karakter)
+- ⚠️ ChromaDB'de 53 döküman birikmiş
+
+---
+
+### 🚨 Tespit Edilen Sorunlar
+
+#### 1. V2 Adaptörleri Kullanılmıyor!
+**Kritiklik:** 🔴 YÜKSEK
+
+```python
+# src/experts/lora_manager.py - ADAPTER_REGISTRY
+"turkish_culture": "tr_chat",     # ❌ tr_chat_v2 olmalı
+"code_python": "python_coder",    # ❌ python_coder_v2 olmalı
+```
+
+**Düzeltme:**
+```python
+ADAPTER_REGISTRY = {
+    "general_chat": None,
+    "turkish_culture": "tr_chat_v2",     # ✅
+    "code_python": "python_coder_v2",    # ✅
+    "code_debug": "python_coder_v2",     # ✅
+    "code_explain": "python_coder_v2",   # ✅
+    ...
+}
+```
+
+#### 2. CLI'da Feedback Mekanizması Yok!
+**Kritiklik:** 🔴 YÜKSEK
+
+- Web arayüzünde 👍/👎 butonları var ama CLI'da yok
+- `preference_learning.py` hazır ama CLI'a entegre değil
+- Lifecycle döngüsü feedback olmadan çalışamaz
+
+**Gereken:**
+- `/feedback good` veya `/feedback bad` komutu
+- Ya da yanıttan sonra `[g]ood / [b]ad` prompt'u
+
+#### 3. Intent-Adapter Mapping Tutarsızlık
+**Kritiklik:** 🟡 ORTA
+
+- `configs/intent_mapping.json` → `adapter_tr_chat` prefix kullanıyor
+- `src/experts/lora_manager.py` → `tr_chat` (prefix'siz) kullanıyor
+- İki farklı mapping sistemi çakışıyor
+
+#### 4. Router Güven Eşiği Sorunu
+**Kritiklik:** 🟡 ORTA
+
+- Bazı intent'ler %50-55 güvenle tespit ediliyor
+- `confidence_threshold: 0.7` config'de var ama uygulanmıyor
+- Düşük güvenli tahminlerde fallback çalışmalı
+
+#### 5. "Osmanlı tarihi" → "turkish_culture" Hatalı
+**Kritiklik:** 🟡 ORTA
+
+- Tarih sorusu `history` intent'ine gitmeli
+- Router eğitim verisi yetersiz olabilir
+
+---
+
+### 💡 İyileştirme Önerileri
+
+#### Öncelik 1 - Kritik (Bu Hafta)
+1. **V2 adaptör mapping'ini düzelt** - 10 dk
+2. **CLI'a feedback komutu ekle** - 30 dk
+3. **Router confidence kontrolü aktifleştir** - 15 dk
+
+#### Öncelik 2 - Önemli (Bu Ay)
+4. **Router eğitim verisine tarih örnekleri ekle**
+5. **Intent mapping tutarsızlığını çöz** (tek kaynak)
+6. **Gece analizi için feedback toplama başlat**
+
+#### Öncelik 3 - İyileştirme
+7. V1 vs V2 adaptör kalite karşılaştırması
+8. TTT cache hit oranı takibi
+9. Uzun konuşmalarda context overflow kontrolü
+
+---
+
+### 📊 Sistem Sağlık Durumu
+
+| Bileşen | Durum | Not |
+|---------|-------|-----|
+| Base Model | ✅ Çalışıyor | Qwen 2.5 3B |
+| Router | ⚠️ Kısmen | Düşük güven sorunları |
+| LoRA V2 | ✅ Entegre edildi | ADAPTER_REGISTRY güncellendi |
+| Memory/RAG | ✅ Çalışıyor | 53 döküman |
+| TTT | ✅ Çalışıyor | dynamic_prompt aktif |
+| Feedback | ✅ Birleştirildi | CLI + Web → SQLite |
+| Lifecycle | ✅ Hazır | process_feedback.py oluşturuldu |
+
+---
+
+## ✅ Düzeltmeler (7 Aralık 2024 - 17:00)
+
+### 1. V2 Adaptör Entegrasyonu - TAMAMLANDI ✅
+**Dosya:** `src/experts/lora_manager.py`
+
+```python
+ADAPTER_REGISTRY = {
+    "general_chat": "tr_chat_v2",        # ✅ V2
+    "turkish_culture": "tr_chat_v2",     # ✅ V2
+    "code_python": "python_coder_v2",    # ✅ V2
+    "code_debug": "python_coder_v2",     # ✅ V2
+    ...
+}
+```
+
+### 2. CLI Feedback Komutları - TAMAMLANDI ✅
+**Dosya:** `scripts/chat_cli.py`
+
+Eklenen komutlar:
+- `/good` - Yanıtı olumlu işaretle (thumbs_up)
+- `/bad` - Yanıtı olumsuz işaretle (thumbs_down)
+- `/correct <düzeltme>` - Doğru yanıtı gir (correction)
+
+### 3. Feedback Birleştirme - TAMAMLANDI ✅
+**Sorun:** Web (SQLite) ve CLI (JSONL) farklı formatlarda kaydediyordu
+
+**Çözüm:**
+- CLI artık `FeedbackDatabase` kullanıyor
+- Tek veritabanı: `data/feedback.db` (SQLite)
+- Web ve CLI aynı tabloya yazıyor
+
+### 4. Lifecycle Script - TAMAMLANDI ✅
+**Dosya:** `scripts/process_feedback.py`
+
+```bash
+# Analiz modu
+python scripts/process_feedback.py --analyze
+
+# Eğitim başlat (10+ düzeltme gerekli)
+python scripts/process_feedback.py --train
+```
+
+### 5. Web Correction Özelliği - TAMAMLANDI ✅
+**Dosya:** `src/web/static/index.html`
+
+- ✏️ düzeltme butonu eklendi
+- Modal popup ile correction girişi
+- FeedbackDatabase'e kayıt
+
+---
+
+## 📊 Mevcut Feedback Durumu
+
+```
+📊 Toplam Feedback: 5 adet
+✏️ Düzeltme: 2 adet
+👎 Negatif: 2 adet
+👍 Pozitif: 1 adet
+
+⚠️ Eğitim için 8 düzeltme daha gerekli (min: 10)
+```
+
+---
+
+## 🎯 Sonraki Hedefler
+
+1. **Kullanım ve Feedback Toplama**
+   - Her gün 5-10 sohbet yap
+   - Kötü cevapları düzelt (/correct)
+   - 10 düzeltmeye ulaş
+
+2. **İlk Preference Training**
+   - `python scripts/process_feedback.py --train`
+   - DPO ile iyileştirme
+
+3. **Router İyileştirmesi**
+   - Tarih intent'i için örnekler ekle
+   - Confidence threshold uygula
+

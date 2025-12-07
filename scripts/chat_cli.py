@@ -3,6 +3,7 @@
 EVO-TR: Terminal Chat Interface
 
 Interaktif terminal arayüzü.
+Feedback sistemi ile sürekli öğrenme desteği.
 """
 
 import sys
@@ -17,11 +18,20 @@ from rich.prompt import Prompt
 from rich.live import Live
 from rich.spinner import Spinner
 import re
+from datetime import datetime
+from pathlib import Path
+import json
 
 from src.orchestrator import EvoTR
+from src.lifecycle.feedback import FeedbackDatabase, FeedbackEntry
 
 
 console = Console()
+
+# Global state
+feedback_db = None
+last_interaction = None  # Son mesaj-yanıt çifti
+session_id = None  # Oturum ID
 
 
 def print_banner():
@@ -56,10 +66,13 @@ def print_help():
         ("/status, /s", "Sistem durumunu göster"),
         ("/memory <query>", "Hafızada ara"),
         ("/fact <bilgi>", "Yeni bilgi ekle"),
-        ("/adapter <name>", "Adapter değiştir (python_coder, tr_chat)"),
+        ("/adapter <name>", "Adapter değiştir (python_coder_v2, tr_chat_v2)"),
         ("/base", "Base modele geç"),
         ("/rag on|off", "RAG'ı aç/kapat"),
         ("/history", "Konuşma geçmişini göster"),
+        ("/good, /g", "👍 Son yanıtı beğen (feedback)"),
+        ("/bad, /b", "👎 Son yanıtı beğenme (feedback)"),
+        ("/correct <düzeltme>", "✏️ Doğru yanıtı yaz (en değerli feedback)"),
         ("/quit, /q, exit", "Programdan çık"),
     ]
     
@@ -107,21 +120,67 @@ def print_response(text: str):
             i += 1
 
 
+def save_feedback_to_db(
+    feedback_type: str, 
+    prompt: str, 
+    response: str, 
+    adapter: str, 
+    intent: str = "",
+    correction: str = None,
+    message_id: str = None
+) -> str:
+    """Feedback'i SQLite veritabanına kaydet (Web ile aynı format)."""
+    global feedback_db, session_id
+    
+    if feedback_db is None:
+        feedback_db = FeedbackDatabase("./data/feedback.db")
+    
+    # Feedback type mapping (CLI -> DB format)
+    type_mapping = {
+        "good": "thumbs_up",
+        "bad": "thumbs_down",
+        "correction": "edit"
+    }
+    
+    entry = FeedbackEntry(
+        session_id=session_id or "cli_session",
+        message_id=message_id or datetime.now().strftime("%H%M%S"),
+        user_message=prompt,
+        assistant_response=response,
+        intent=intent,
+        adapter_used=adapter,
+        feedback_type=type_mapping.get(feedback_type, feedback_type),
+        corrected_response=correction
+    )
+    
+    feedback_id = feedback_db.add_feedback(entry)
+    return feedback_id
+
+
 def main():
     """Ana program."""
+    global last_interaction, feedback_db, session_id
+    
     print_banner()
     
     console.print("\n[yellow]🔄 Sistem başlatılıyor...[/yellow]\n")
     
+    # Session ID oluştur
+    session_id = f"cli_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    
     # EVO-TR başlat
     try:
         evo = EvoTR(verbose=False)
+        feedback_db = FeedbackDatabase("./data/feedback.db")
     except Exception as e:
         console.print(f"[red]❌ Hata: {e}[/red]")
         return
     
     console.print("[green]✅ EVO-TR hazır![/green]")
-    console.print("[dim]Yardım için /help yazın. Çıkmak için /quit yazın.[/dim]\n")
+    console.print("[dim]Yardım için /help yazın. Feedback için /good veya /bad kullanın.[/dim]\n")
+    
+    # Son etkileşimi takip et
+    last_interaction = None
     
     # Ana döngü
     while True:
@@ -224,6 +283,53 @@ def main():
                             console.print(f"  👤 {turn.user_message[:50]}...")
                             console.print(f"  🤖 {turn.assistant_response[:50]}...")
                 
+                # Feedback komutları
+                elif cmd in ["/good", "/g"]:
+                    if last_interaction is None:
+                        console.print("[yellow]⚠️ Önce bir sohbet yapmalısınız.[/yellow]")
+                    else:
+                        feedback_id = save_feedback_to_db(
+                            "good",
+                            last_interaction["prompt"],
+                            last_interaction["response"],
+                            last_interaction["adapter"],
+                            last_interaction.get("intent", "")
+                        )
+                        console.print(f"[green]👍 Teşekkürler! Feedback kaydedildi.[/green]")
+                        console.print(f"[dim]ID: {feedback_id}[/dim]")
+                
+                elif cmd in ["/bad", "/b"]:
+                    if last_interaction is None:
+                        console.print("[yellow]⚠️ Önce bir sohbet yapmalısınız.[/yellow]")
+                    else:
+                        feedback_id = save_feedback_to_db(
+                            "bad",
+                            last_interaction["prompt"],
+                            last_interaction["response"],
+                            last_interaction["adapter"],
+                            last_interaction.get("intent", "")
+                        )
+                        console.print(f"[yellow]👎 Feedback kaydedildi. Daha iyi olacağız![/yellow]")
+                        console.print(f"[dim]ID: {feedback_id}[/dim]")
+                        console.print("[cyan]💡 İpucu: /correct <doğru yanıt> ile düzeltme yapabilirsiniz.[/cyan]")
+                
+                elif cmd == "/correct":
+                    if last_interaction is None:
+                        console.print("[yellow]⚠️ Önce bir sohbet yapmalısınız.[/yellow]")
+                    elif not arg:
+                        console.print("[yellow]Kullanım: /correct <doğru yanıt>[/yellow]")
+                    else:
+                        feedback_id = save_feedback_to_db(
+                            "correction",
+                            last_interaction["prompt"],
+                            last_interaction["response"],
+                            last_interaction["adapter"],
+                            last_interaction.get("intent", ""),
+                            correction=arg
+                        )
+                        console.print(f"[green]✏️ Düzeltme kaydedildi! (Lifecycle için hazır)[/green]")
+                        console.print(f"[dim]ID: {feedback_id}[/dim]")
+                
                 else:
                     console.print(f"[red]❓ Bilinmeyen komut: {cmd}[/red]")
                 
@@ -240,6 +346,14 @@ def main():
             
             console.print(f"\n[bold green]🤖 EVO-TR[/bold green] {adapter_info}")
             print_response(response)
+            
+            # Son etkileşimi kaydet (feedback için)
+            last_interaction = {
+                "prompt": user_input,
+                "response": response,
+                "adapter": status['current_adapter'] or 'base',
+                "intent": status.get('current_intent', 'unknown')
+            }
             
         except KeyboardInterrupt:
             console.print("\n\n[yellow]👋 Görüşmek üzere![/yellow]")

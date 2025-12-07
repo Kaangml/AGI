@@ -57,28 +57,45 @@ V1'de **altyapı** kuruldu. V2'de **bebeği doğurup besleyeceğiz**:
 
 ---
 
-## ⬜ FAZ V2.3: Gerçek Kullanım - SIRADA
+## ✅ FAZ V2.3: Sistem Entegrasyonu - TAMAMLANDI
 
 ### V2.3.1 Chat CLI Güncelleme
-- [ ] V2 adaptörlerini entegre et
-- [ ] Sistem promptunu güncelle
-- [ ] Feedback butonu ekle
+- [x] V2 adaptörlerini varsayılan yap (lora_manager.py güncellendi)
+- [x] Feedback komutları ekle (/good, /bad, /correct)
+- [x] Feedback kaydetme sistemi (data/feedback.db)
 
-### V2.3.2 Günlük Kullanım
-- [ ] Her gün en az 10 sohbet
-- [ ] Farklı konular test etme
-- [ ] Feedback verme
+### V2.3.2 Sistem Analizi & Düzeltmeler
+- [x] Router performans testi
+- [x] V2 adaptör mapping düzeltmesi (ADAPTER_REGISTRY)
+- [x] Preference learning CLI entegrasyonu
+- [x] Web + CLI feedback birleştirme (SQLite)
+- [x] Lifecycle script (process_feedback.py)
+- [x] Web correction özelliği (✏️ buton)
 
 ---
 
-## ⬜ FAZ V2.4: Öğrenme Döngüsü
+## 🔄 FAZ V2.4: Gerçek Kullanım - AKTİF
 
-### V2.4.1 Feedback Analizi
+### V2.4.1 Günlük Kullanım
+- [ ] Her gün en az 10 sohbet
+- [ ] Farklı konular test etme
+- [ ] Feedback verme (/good, /bad, /correct)
+
+### V2.4.2 Feedback Toplama
+- [ ] 50+ feedback topla
 - [ ] Haftalık feedback raporu
 - [ ] Zayıf nokta tespiti
 
-### V2.4.2 Incremental Training
-- [ ] Feedback'lerden veri hazırlama
+---
+
+## ⬜ FAZ V2.5: Öğrenme Döngüsü
+
+### V2.5.1 Feedback Analizi
+- [ ] Feedback verilerini analiz et
+- [ ] Preference pairs oluştur
+
+### V2.5.2 Incremental Training
+- [ ] Feedback'lerden DPO verisi hazırla
 - [ ] LoRA güncelleme
 
 ---
@@ -91,4 +108,8 @@ V1'de **altyapı** kuruldu. V2'de **bebeği doğurup besleyeceğiz**:
 | Python Veri | 13,334 | 14,000+ | 13,836 | ✅ |
 | Gemma Üretilen | 0 | 1,000 | 1,005 | ✅ |
 | LoRA V2 | 0 | 2 | 2 | ✅ |
-| Gerçek Konuşma | 2 | 100+ | 2 | ⬜ |
+| V2 Entegrasyon | ❌ | ✅ | ✅ | ✅ |
+| Feedback Sistemi | ❌ | ✅ | ✅ | ✅ |
+| Gerçek Konuşma | 2 | 100+ | 5+ | 🔄 |
+| Toplanan Feedback | 0 | 50+ | 5 | 🔄 |
+| Lifecycle Hazır | ❌ | ✅ | ✅ | ✅ |
