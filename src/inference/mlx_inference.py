@@ -7,7 +7,7 @@ MLX-LM ile text generation yönetimi.
 from typing import Dict, List, Optional, Any, Generator
 from dataclasses import dataclass
 import time
-from mlx_lm import generate
+from mlx_lm import generate, stream_generate
 
 
 @dataclass
@@ -73,6 +73,13 @@ Bilimsel kavramları açık ve anlaşılır şekilde açıkla.
 Örnekler ve benzetmeler kullan.
 Formülleri ve denklemleri göster.
 Hem Türkçe hem İngilizce bilim terimlerini kullan.""",
+        
+        "history": """Sen EVO-TR, Türk tarihi ve dünya tarihi konusunda uzman bir tarihçisin.
+Tarihi olayları, dönemleri ve önemli kişileri detaylı şekilde anlat.
+Kronolojik sıralama yap.
+Neden-sonuç ilişkilerini açıkla.
+Osmanlı, Cumhuriyet, Selçuklu ve Türk tarihi konularında özellikle bilgilisin.
+Atatürk, Kurtuluş Savaşı ve Türk devrimleri hakkında kapsamlı bilgi ver.""",
         
         "memory_recall": """Sen EVO-TR, iyi bir hafızaya sahip bir asistansın.
 Kullanıcı hakkında öğrendiğin bilgileri hatırla ve kullan.
@@ -243,6 +250,72 @@ Bilmediğin konularda dürüst ol."""
         
         # Generate
         return self.generate(model, tokenizer, prompt, config)
+    
+    def generate_stream(
+        self,
+        model: Any,
+        tokenizer: Any,
+        prompt: str,
+        config: Optional[GenerationConfig] = None
+    ) -> Generator[str, None, None]:
+        """
+        Streaming text generation.
+        
+        Args:
+            model: MLX model
+            tokenizer: Tokenizer
+            prompt: Input prompt
+            config: Generation config (optional)
+        
+        Yields:
+            Token strings one by one
+        """
+        cfg = config or self.default_config
+        
+        for response in stream_generate(
+            model,
+            tokenizer,
+            prompt=prompt,
+            max_tokens=cfg.max_tokens
+        ):
+            yield response.text
+    
+    def generate_response_stream(
+        self,
+        model: Any,
+        tokenizer: Any,
+        user_message: str,
+        intent: str = "general_chat",
+        chat_history: Optional[List[Dict[str, str]]] = None,
+        context: Optional[str] = None,
+        config: Optional[GenerationConfig] = None
+    ) -> Generator[str, None, None]:
+        """
+        Streaming yanıt oluştur (prompt building + streaming generation).
+        
+        Args:
+            model: MLX model
+            tokenizer: Tokenizer
+            user_message: Kullanıcı mesajı
+            intent: Intent kategorisi
+            chat_history: Önceki mesajlar
+            context: RAG context
+            config: Generation config
+        
+        Yields:
+            Token strings one by one
+        """
+        # Prompt oluştur
+        prompt = self.build_chat_prompt(
+            tokenizer=tokenizer,
+            user_message=user_message,
+            intent=intent,
+            chat_history=chat_history,
+            context=context
+        )
+        
+        # Stream generate
+        yield from self.generate_stream(model, tokenizer, prompt, config)
     
     def get_stats(self) -> Dict[str, Any]:
         """Inference istatistikleri."""

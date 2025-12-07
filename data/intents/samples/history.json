@@ -1,0 +1,127 @@
+{
+    "intent": "history",
+    "description": "Tarih, tarihi olaylar, kişiler ve dönemler hakkında sorular",
+    "sample_count": 30,
+    "samples": [
+        {
+            "text": "Osmanlı İmparatorluğu ne zaman kuruldu?",
+            "language": "tr"
+        },
+        {
+            "text": "Fatih Sultan Mehmet kimdir?",
+            "language": "tr"
+        },
+        {
+            "text": "İstanbul ne zaman fethedildi?",
+            "language": "tr"
+        },
+        {
+            "text": "Atatürk kimdir?",
+            "language": "tr"
+        },
+        {
+            "text": "Kurtuluş Savaşı ne zaman oldu?",
+            "language": "tr"
+        },
+        {
+            "text": "Cumhuriyet ne zaman ilan edildi?",
+            "language": "tr"
+        },
+        {
+            "text": "Kanuni Sultan Süleyman dönemini anlat",
+            "language": "tr"
+        },
+        {
+            "text": "Çanakkale Savaşı hakkında bilgi ver",
+            "language": "tr"
+        },
+        {
+            "text": "Malazgirt Meydan Muharebesi neden önemli?",
+            "language": "tr"
+        },
+        {
+            "text": "Lozan Antlaşması ne zaman imzalandı?",
+            "language": "tr"
+        },
+        {
+            "text": "Selçuklular hakkında bilgi ver",
+            "language": "tr"
+        },
+        {
+            "text": "Göktürkler kimlerdir?",
+            "language": "tr"
+        },
+        {
+            "text": "Mimar Sinan kimdir?",
+            "language": "tr"
+        },
+        {
+            "text": "Atatürk ilkeleri nelerdir?",
+            "language": "tr"
+        },
+        {
+            "text": "Türkiye Cumhuriyeti nasıl kuruldu?",
+            "language": "tr"
+        },
+        {
+            "text": "When was the Ottoman Empire founded?",
+            "language": "en"
+        },
+        {
+            "text": "Who was Ataturk?",
+            "language": "en"
+        },
+        {
+            "text": "Tell me about World War I",
+            "language": "en"
+        },
+        {
+            "text": "What caused World War II?",
+            "language": "en"
+        },
+        {
+            "text": "Who was Napoleon Bonaparte?",
+            "language": "en"
+        },
+        {
+            "text": "Birinci Dünya Savaşı nasıl başladı?",
+            "language": "tr"
+        },
+        {
+            "text": "Roma İmparatorluğu ne zaman yıkıldı?",
+            "language": "tr"
+        },
+        {
+            "text": "Fransız İhtilali ne zaman oldu?",
+            "language": "tr"
+        },
+        {
+            "text": "Mondros Mütarekesi nedir?",
+            "language": "tr"
+        },
+        {
+            "text": "Sevr Antlaşması ne anlama geliyor?",
+            "language": "tr"
+        },
+        {
+            "text": "Tanzimat Fermanı hakkında bilgi ver",
+            "language": "tr"
+        },
+        {
+            "text": "Yavuz Sultan Selim dönemi",
+            "language": "tr"
+        },
+        {
+            "text": "Osmanlı padişahlarını say",
+            "language": "tr"
+        },
+        {
+            "text": "Türk tarihindeki önemli savaşlar",
+            "language": "tr"
+        },
+        {
+            "text": "Sakarya Meydan Muharebesi nedir?",
+            "language": "tr"
+        }
+    ]
+}

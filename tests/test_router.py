@@ -24,7 +24,7 @@ class TestIntentClassifier:
     def test_classifier_loads(self, classifier):
         """Classifier başarıyla yükleniyor mu?"""
         assert classifier is not None
-        assert len(classifier.intent_embeddings) == 9  # 9 intent (code_math + science dahil)
+        assert len(classifier.intent_embeddings) == 10  # 10 intent (code_math + science + history dahil)
     
     def test_general_chat_intent(self, classifier):
         """Genel sohbet intent'i doğru tespit ediliyor mu?"""
@@ -60,6 +60,13 @@ class TestIntentClassifier:
         # Confidence yüksekse adapter, düşükse fallback
         assert result["adapter_id"] in ["adapter_science_expert", "base_model"]
     
+    def test_history_intent(self, classifier):
+        """Tarih intent'i doğru tespit ediliyor mu?"""
+        result = classifier.predict("Osmanlı İmparatorluğu ne zaman kuruldu?")
+        assert result["intent"] == "history"
+        # Confidence yüksekse adapter, düşükse fallback
+        assert result["adapter_id"] in ["adapter_history_expert", "base_model"]
+    
     def test_memory_recall_intent(self, classifier):
         """Hafıza intent'i doğru tespit ediliyor mu?"""
         result = classifier.predict("Dün ne konuştuk?")
@@ -81,13 +88,13 @@ class TestIntentClassifier:
         assert "confidence" in result
         assert "adapter_id" in result
         assert "all_scores" in result
-        assert len(result["all_scores"]) == 9  # 9 intent
+        assert len(result["all_scores"]) == 10  # 10 intent
     
     def test_get_stats(self, classifier):
         """İstatistikler doğru döndürülüyor mu?"""
         stats = classifier.get_stats()
-        assert stats["total_intents"] == 9  # 9 intent
-        assert stats["total_samples"] >= 230  # 215 + 30 science = 245
+        assert stats["total_intents"] == 10  # 10 intent
+        assert stats["total_samples"] >= 260  # 245 + 30 history = 275
         assert "confidence_threshold" in stats
 
 
@@ -100,7 +107,7 @@ class TestRouterAPI:
         assert isinstance(adapter, str)
         assert adapter in ["adapter_tr_chat", "adapter_python_coder", 
                           "adapter_math_expert", "adapter_science_expert",
-                          "memory_system", "base_model"]
+                          "adapter_history_expert", "memory_system", "base_model"]
     
     def test_route_with_details(self):
         """route_with_details detaylı bilgi döndürüyor mu?"""

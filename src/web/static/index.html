@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EVO-TR - Türkçe AI Asistan</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --bg-dark: #1a1a2e;
+            --bg-light: #16213e;
+            --text: #e4e4e7;
+            --text-muted: #a1a1aa;
+            --border: #3f3f46;
+            --success: #22c55e;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-light);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header .status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--warning);
+        }
+
+        .status-dot.connected {
+            background: var(--success);
+        }
+
+        /* Main Container */
+        .container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-light);
+            border-right: 1px solid var(--border);
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .adapter-list {
+            list-style: none;
+        }
+
+        .adapter-item {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .adapter-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .adapter-item.active {
+            background: var(--primary);
+        }
+
+        .adapter-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .adapter-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .message {
+            max-width: 80%;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message.user {
+            margin-left: auto;
+        }
+
+        .message.assistant {
+            margin-right: auto;
+        }
+
+        .message-content {
+            padding: 0.875rem 1rem;
+            border-radius: 1rem;
+            line-height: 1.5;
+        }
+
+        .message.user .message-content {
+            background: var(--primary);
+            border-bottom-right-radius: 0.25rem;
+        }
+
+        .message.assistant .message-content {
+            background: var(--bg-light);
+            border-bottom-left-radius: 0.25rem;
+        }
+
+        .message-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            padding: 0 0.5rem;
+        }
+
+        .message.user .message-meta {
+            text-align: right;
+        }
+
+        /* Feedback Buttons */
+        .feedback-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            padding: 0 0.5rem;
+        }
+
+        .feedback-btn {
+            padding: 0.25rem 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .feedback-btn:hover {
+            background: var(--bg-light);
+            color: var(--text);
+        }
+
+        .feedback-btn.selected {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .feedback-btn.thumbs-up.selected {
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .feedback-btn.thumbs-down.selected {
+            border-color: var(--error);
+            color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .feedback-sent {
+            font-size: 0.75rem;
+            color: var(--success);
+            margin-left: 0.5rem;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 1rem 1.5rem;
+            background: var(--bg-light);
+            border-top: 1px solid var(--border);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 0.75rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .input-container input {
+            flex: 1;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            background: var(--bg-dark);
+            color: var(--text);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-container input:focus {
+            border-color: var(--primary);
+        }
+
+        .input-container button {
+            padding: 0.875rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .input-container button:hover {
+            background: var(--primary-dark);
+        }
+
+        .input-container button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Loading */
+        .typing-indicator {
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.875rem 1rem;
+            background: var(--bg-light);
+            border-radius: 1rem;
+            width: fit-content;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        /* Intent Badge */
+        .intent-badge {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            background: rgba(79, 70, 229, 0.2);
+            color: var(--primary);
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+        }
+
+        /* Typing cursor for streaming */
+        .typing-cursor {
+            animation: blink 1s infinite;
+            color: var(--primary);
+        }
+
+        @keyframes blink {
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            51%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+        }
+
+        /* Toggle switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .toggle {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            background: var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle.active {
+            background: var(--success);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: left 0.3s;
+        }
+
+        .toggle.active::after {
+            left: 22px;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <h1>🤖 EVO-TR</h1>
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <div class="toggle-container">
+                <span>SSE</span>
+                <div class="toggle" id="wsToggle" title="WebSocket mode"></div>
+                <span>WS</span>
+            </div>
+            <div class="status">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Bağlanıyor...</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h3>Uzmanlar</h3>
+            <ul class="adapter-list" id="adapterList">
+                <li class="adapter-item active" data-adapter="auto">
+                    <div class="adapter-name">🎯 Otomatik</div>
+                    <div class="adapter-desc">Soruya göre uzman seç</div>
+                </li>
+            </ul>
+
+            <h3 style="margin-top: 1.5rem;">Sistem</h3>
+            <div id="systemInfo" style="font-size: 0.8rem; color: var(--text-muted);">
+                Yükleniyor...
+            </div>
+        </aside>
+
+        <main class="chat-area">
+            <div class="messages" id="messages">
+                <div class="message assistant">
+                    <div class="message-content">
+                        Merhaba! Ben EVO-TR, Türkçe AI asistanınızım. 🇹🇷
+                        <br><br>
+                        Size nasıl yardımcı olabilirim? Türkçe sohbet, Python kodu, matematik, bilim veya tarih
+                        konularında sorularınızı yanıtlayabilirim.
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-container">
+                    <input type="text" id="messageInput" placeholder="Mesajınızı yazın..." autocomplete="off">
+                    <button id="sendButton">Gönder</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+        const WS_URL = API_URL.replace('http', 'ws') + '/ws/chat';
+        let ws = null;
+        let selectedAdapter = 'auto';
+        let useWebSocket = false;
+
+        // Message history for feedback
+        const messageHistory = new Map();  // messageId -> {userMessage, assistantResponse, intent, adapter}
+
+        // Elements
+        const messagesEl = document.getElementById('messages');
+        const inputEl = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const adapterList = document.getElementById('adapterList');
+        const systemInfo = document.getElementById('systemInfo');
+        const wsToggle = document.getElementById('wsToggle');
+
+        // Initialize
+        async function init() {
+            await loadAdapters();
+            await loadStatus();
+            setupEventListeners();
+            updateStatus(true);
+        }
+
+        // WebSocket connection
+        function connectWebSocket() {
+            if (ws) {
+                ws.close();
+            }
+
+            ws = new WebSocket(WS_URL);
+
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                updateStatus(true);
+                statusText.textContent = 'WS Bağlı';
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket disconnected');
+                if (useWebSocket) {
+                    updateStatus(false);
+                    statusText.textContent = 'WS Bağlantı Kesildi';
+                    // Reconnect after 3 seconds
+                    setTimeout(connectWebSocket, 3000);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        }
+
+        function disconnectWebSocket() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+            updateStatus(true);
+            statusText.textContent = 'Bağlı';
+        }
+
+        // Load adapters
+        async function loadAdapters() {
+            try {
+                const res = await fetch(`${API_URL}/adapters`);
+                const adapters = await res.json();
+
+                adapters.forEach(adapter => {
+                    const li = document.createElement('li');
+                    li.className = 'adapter-item';
+                    li.dataset.adapter = adapter.name;
+                    li.innerHTML = `
+                        <div class="adapter-name">${getAdapterIcon(adapter.intent)} ${adapter.name}</div>
+                        <div class="adapter-desc">${adapter.description}</div>
+                    `;
+                    adapterList.appendChild(li);
+                });
+            } catch (e) {
+                console.error('Failed to load adapters:', e);
+            }
+        }
+
+        function getAdapterIcon(intent) {
+            const icons = {
+                'turkish_culture': '🇹🇷',
+                'code_python': '🐍',
+                'code_math': '🔢',
+                'science': '🔬',
+                'history': '📜',
+                'general': '💬'
+            };
+            return icons[intent] || '🤖';
+        }
+
+        // Load system status
+        async function loadStatus() {
+            try {
+                const res = await fetch(`${API_URL}/status`);
+                const status = await res.json();
+
+                systemInfo.innerHTML = `
+                    <div>Model: ${status.model_loaded ? '✅' : '⏳'}</div>
+                    <div>Bellek: ${status.memory_usage_mb} MB</div>
+                    <div>Uptime: ${Math.round(status.uptime_seconds)}s</div>
+                    <div>Adapters: ${status.adapters_available.length}</div>
+                `;
+            } catch (e) {
+                systemInfo.innerHTML = 'Bağlantı hatası';
+            }
+        }
+
+        // Update connection status
+        function updateStatus(connected) {
+            statusDot.classList.toggle('connected', connected);
+            statusText.textContent = connected ? 'Bağlı' : 'Bağlantı kesildi';
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            sendButton.addEventListener('click', sendMessage);
+
+            inputEl.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            adapterList.addEventListener('click', (e) => {
+                const item = e.target.closest('.adapter-item');
+                if (item) {
+                    document.querySelectorAll('.adapter-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    selectedAdapter = item.dataset.adapter;
+                }
+            });
+
+            // WebSocket toggle
+            wsToggle.addEventListener('click', () => {
+                useWebSocket = !useWebSocket;
+                wsToggle.classList.toggle('active', useWebSocket);
+
+                if (useWebSocket) {
+                    connectWebSocket();
+                } else {
+                    disconnectWebSocket();
+                }
+            });
+        }
+
+        // Send message (with streaming support)
+        async function sendMessage() {
+            const message = inputEl.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            inputEl.value = '';
+            sendButton.disabled = true;
+
+            // Use WebSocket or SSE based on toggle
+            if (useWebSocket && ws && ws.readyState === WebSocket.OPEN) {
+                await sendMessageViaWebSocket(message);
+            } else {
+                await sendMessageViaSSE(message);
+            }
+
+            sendButton.disabled = false;
+            inputEl.focus();
+        }
+
+        // Send via WebSocket
+        async function sendMessageViaWebSocket(message) {
+            const messageId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+            // Create assistant message element for streaming
+            const assistantDiv = document.createElement('div');
+            assistantDiv.className = 'message assistant';
+            assistantDiv.dataset.messageId = messageId;
+            assistantDiv.innerHTML = `
+                <div class="message-content"></div>
+                <div class="message-meta"></div>
+                <div class="feedback-buttons" data-message-id="${messageId}" style="display:none;">
+                    <button class="feedback-btn thumbs-up" onclick="sendFeedback('${messageId}', 'thumbs_up', this)" title="Beğendim">👍</button>
+                    <button class="feedback-btn thumbs-down" onclick="sendFeedback('${messageId}', 'thumbs_down', this)" title="Beğenmedim">👎</button>
+                </div>
+            `;
+            messagesEl.appendChild(assistantDiv);
+
+            const contentEl = assistantDiv.querySelector('.message-content');
+            const metaEl = assistantDiv.querySelector('.message-meta');
+            const feedbackEl = assistantDiv.querySelector('.feedback-buttons');
+
+            contentEl.innerHTML = '<span class="typing-cursor">▋</span>';
+
+            let fullText = '';
+            let metadata = {};
+
+            return new Promise((resolve) => {
+                const handleMessage = (event) => {
+                    const data = JSON.parse(event.data);
+
+                    if (data.type === 'meta') {
+                        metadata = data;
+                    } else if (data.type === 'token') {
+                        fullText += data.text;
+                        contentEl.innerHTML = formatMessage(fullText) + '<span class="typing-cursor">▋</span>';
+                        messagesEl.scrollTop = messagesEl.scrollHeight;
+                    } else if (data.type === 'done') {
+                        metadata.tokens = data.tokens_generated;
+                        metadata.time = data.generation_time;
+
+                        // Remove cursor and update final content
+                        contentEl.innerHTML = formatMessage(fullText);
+
+                        // Show metadata
+                        if (metadata.intent) {
+                            metaEl.innerHTML = `
+                                <span class="intent-badge">${metadata.intent}</span>
+                                ${metadata.time ? `· ${metadata.time}s` : ''}
+                                ${metadata.tokens ? `· ${metadata.tokens} tokens` : ''}
+                            `;
+
+                            // Show feedback buttons and store message data
+                            feedbackEl.style.display = 'flex';
+                            messageHistory.set(messageId, {
+                                userMessage: message,
+                                assistantResponse: fullText,
+                                intent: metadata.intent,
+                                adapter: metadata.adapter || selectedAdapter
+                            });
+                        }
+
+                        ws.removeEventListener('message', handleMessage);
+                        resolve();
+                    } else if (data.type === 'error') {
+                        contentEl.innerHTML = `Hata: ${data.message}`;
+                        ws.removeEventListener('message', handleMessage);
+                        resolve();
+                    }
+                };
+
+                ws.addEventListener('message', handleMessage);
+                ws.send(JSON.stringify({
+                    message: message,
+                    adapter: selectedAdapter === 'auto' ? null : selectedAdapter
+                }));
+            });
+        }
+
+        // Send via SSE (original streaming)
+        async function sendMessageViaSSE(message) {
+            const messageId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+            // Create assistant message element for streaming
+            const assistantDiv = document.createElement('div');
+            assistantDiv.className = 'message assistant';
+            assistantDiv.dataset.messageId = messageId;
+            assistantDiv.innerHTML = `
+                <div class="message-content"></div>
+                <div class="message-meta"></div>
+                <div class="feedback-buttons" data-message-id="${messageId}" style="display:none;">
+                    <button class="feedback-btn thumbs-up" onclick="sendFeedback('${messageId}', 'thumbs_up', this)" title="Beğendim">👍</button>
+                    <button class="feedback-btn thumbs-down" onclick="sendFeedback('${messageId}', 'thumbs_down', this)" title="Beğenmedim">👎</button>
+                </div>
+            `;
+            messagesEl.appendChild(assistantDiv);
+
+            const contentEl = assistantDiv.querySelector('.message-content');
+            const metaEl = assistantDiv.querySelector('.message-meta');
+            const feedbackEl = assistantDiv.querySelector('.feedback-buttons');
+
+            // Show typing cursor
+            contentEl.innerHTML = '<span class="typing-cursor">▋</span>';
+
+            let fullText = '';
+            let metadata = {};
+
+            try {
+                // Use streaming endpoint
+                const response = await fetch(`${API_URL}/chat/stream`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: message,
+                        adapter: selectedAdapter === 'auto' ? null : selectedAdapter
+                    })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const text = decoder.decode(value);
+                    const lines = text.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.slice(6));
+
+                                if (data.type === 'meta') {
+                                    metadata = data;
+                                } else if (data.type === 'token') {
+                                    fullText += data.text;
+                                    contentEl.innerHTML = formatMessage(fullText) + '<span class="typing-cursor">▋</span>';
+                                    messagesEl.scrollTop = messagesEl.scrollHeight;
+                                } else if (data.type === 'done') {
+                                    metadata.tokens = data.tokens_generated;
+                                    metadata.time = data.generation_time;
+                                } else if (data.type === 'error') {
+                                    fullText = `Hata: ${data.message}`;
+                                }
+                            } catch (e) {
+                                // Skip invalid JSON
+                            }
+                        }
+                    }
+                }
+
+                // Remove cursor and update final content
+                contentEl.innerHTML = formatMessage(fullText);
+
+                // Show metadata
+                if (metadata.intent) {
+                    metaEl.innerHTML = `
+                        <span class="intent-badge">${metadata.intent}</span>
+                        ${metadata.time ? `· ${metadata.time}s` : ''}
+                        ${metadata.tokens ? `· ${metadata.tokens} tokens` : ''}
+                    `;
+
+                    // Show feedback buttons and store message data
+                    feedbackEl.style.display = 'flex';
+                    messageHistory.set(messageId, {
+                        userMessage: message,
+                        assistantResponse: fullText,
+                        intent: metadata.intent,
+                        adapter: metadata.adapter || selectedAdapter
+                    });
+                }
+
+            } catch (e) {
+                contentEl.innerHTML = `Bağlantı hatası: ${e.message}`;
+            }
+        }
+
+        // Add message to chat
+        function addMessage(content, role, meta = null) {
+            const div = document.createElement('div');
+            div.className = `message ${role}`;
+            const messageId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            div.dataset.messageId = messageId;
+
+            let metaHtml = '';
+            let feedbackHtml = '';
+
+            if (meta) {
+                metaHtml = `
+                    <div class="message-meta">
+                        <span class="intent-badge">${meta.intent}</span>
+                        ${meta.time ? `· ${meta.time}s` : ''}
+                    </div>
+                `;
+
+                // Add feedback buttons for assistant messages
+                if (role === 'assistant') {
+                    feedbackHtml = `
+                        <div class="feedback-buttons" data-message-id="${messageId}">
+                            <button class="feedback-btn thumbs-up" onclick="sendFeedback('${messageId}', 'thumbs_up', this)" title="Beğendim">👍</button>
+                            <button class="feedback-btn thumbs-down" onclick="sendFeedback('${messageId}', 'thumbs_down', this)" title="Beğenmedim">👎</button>
+                        </div>
+                    `;
+                }
+            }
+
+            div.innerHTML = `
+                <div class="message-content">${formatMessage(content)}</div>
+                ${metaHtml}
+                ${feedbackHtml}
+            `;
+
+            messagesEl.appendChild(div);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+
+            return div;
+        }
+
+        // Send feedback to API
+        async function sendFeedback(messageId, feedbackType, buttonEl) {
+            const msgData = messageHistory.get(messageId);
+            if (!msgData) {
+                console.error('Message data not found for:', messageId);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/feedback/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message_id: messageId,
+                        user_message: msgData.userMessage,
+                        assistant_response: msgData.assistantResponse,
+                        feedback_type: feedbackType,
+                        intent: msgData.intent,
+                        adapter_used: msgData.adapter
+                    })
+                });
+
+                if (response.ok) {
+                    // Update button states
+                    const container = buttonEl.parentElement;
+                    container.querySelectorAll('.feedback-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                        btn.disabled = true;
+                    });
+                    buttonEl.classList.add('selected');
+
+                    // Add confirmation
+                    const confirmSpan = document.createElement('span');
+                    confirmSpan.className = 'feedback-sent';
+                    confirmSpan.textContent = '✓ Teşekkürler';
+                    container.appendChild(confirmSpan);
+                }
+            } catch (error) {
+                console.error('Feedback error:', error);
+            }
+        }
+
+        // Format message (basic markdown)
+        function formatMessage(text) {
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/\n/g, '<br>');
+        }
+
+        // Add typing indicator
+        function addTypingIndicator() {
+            const div = document.createElement('div');
+            div.className = 'message assistant';
+            div.innerHTML = `
+                <div class="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            messagesEl.appendChild(div);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+            return div;
+        }
+
+        // Start
+        init();
+    </script>
+</body>
+
+</html>

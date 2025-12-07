@@ -43,6 +43,7 @@ class LoRAManager:
         "code_explain": "python_coder",
         "code_math": "math_expert",  # Matematik uzmanı
         "science": "science_expert",  # Bilim uzmanı
+        "history": "history_expert",  # Tarih uzmanı
         "memory_recall": None,  # Base model kullan
         "general_knowledge": None,  # Base model kullan
     }

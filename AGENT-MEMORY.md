@@ -864,3 +864,398 @@ adapters/science_expert/
 ```
 
 ---
+
+## 📅 5 Aralık 2024 - Oturum 8
+
+### 🎯 Aktif Görev
+**FAZ 7.3: History Expert LoRA Adapter**
+
+### 📝 İşlem Geçmişi
+
+| Zaman | İşlem | Durum | Notlar |
+|-------|-------|-------|--------|
+| 14:00 | Türkçe tarih veri seti | ✅ | 16 Türk tarihi + 5 dünya tarihi örneği |
+| 14:01 | Train/Val split | ✅ | 34 train / 3 valid örnek |
+| 14:02 | Router history intent | ✅ | 30 örnek eklendi, 10 intent toplam, 275 sample |
+| 14:03 | intent_mapping.json | ✅ | history: adapter_history_expert, v1.3 |
+| 14:04 | LoRA Manager güncellendi | ✅ | history_expert registry'e eklendi |
+| 14:05 | MLX Inference güncellendi | ✅ | history system prompt eklendi |
+| 14:06 | lora_history_config.yaml | ✅ | Config dosyası oluşturuldu |
+| 14:07 | test_history_expert.py | ✅ | 19 test oluşturuldu |
+| 14:08 | test_router.py güncellendi | ✅ | 10 intent, history testi eklendi |
+| 15:30 | LoRA Training başladı | ✅ | 1500 iter, ~75 dakika |
+| 16:48 | LoRA Training TAMAMLANDI | ✅ | Val Loss 2.362→0.015 (%99.4 iyileşme) |
+| 16:50 | Tüm testler çalıştırıldı | ✅ | 153/153 passed |
+
+### 📊 History Expert Veri Seti
+```
+data/training/history/
+├── turkish_history.jsonl (16 örnek)
+│   ├── Osmanlı: 5 örnek
+│   ├── Cumhuriyet: 5 örnek
+│   ├── Selçuklu/Göktürk: 3 örnek
+│   └── Kültür/Mimar Sinan: 3 örnek
+├── world_history.jsonl (5 örnek)
+│   ├── French Revolution
+│   ├── WWI, WWII
+│   ├── Alexander the Great
+│   └── Renaissance
+├── train.jsonl (34 örnek)
+└── valid.jsonl (3 örnek)
+```
+
+### 📊 History Expert Training TAMAMLANDI! ✅
+- **Başlangıç:** 2025-12-05 15:30
+- **Bitiş:** 2025-12-05 16:48
+- **Süre:** ~78 dakika
+- **Model:** Qwen-2.5-3B-Instruct + LoRA
+- **Data:** Turkish + World History (34 train, 3 valid)
+- **Config:** 1500 iter, batch=2, lr=1e-4, 16 layers
+
+### Training Results:
+| Metric | Value |
+|--------|-------|
+| Initial Val Loss | 2.362 |
+| Best Val Loss | 0.011 (iter 800) |
+| Final Val Loss | 0.015 (iter 1500) |
+| İyileşme | %99.4 |
+| Total Tokens | 998,903 |
+| Peak Memory | 5.76 GB |
+| Tokens/sec | ~225 |
+
+### Adapter Files:
+```
+adapters/history_expert/
+├── adapter_config.json (939 bytes)
+├── adapters.safetensors (26.6 MB) ✅
+├── 0000500_adapters.safetensors
+├── 0001000_adapters.safetensors
+└── 0001500_adapters.safetensors
+```
+
+### 🎉 FAZ 7.3 TAMAMLANDI!
+
+**Test Sonuçları:** 153/153 passed ✅
+
+**Router Durumu:**
+- 10 intent destekleniyor
+- 275 toplam örnek
+- History intent doğru yönlendiriliyor
+
+---
+
+## 📊 FAZ 7 ÖZET: Çoklu Uzman LoRA Adapter'ları
+
+| Uzman | Veri | Train Loss | Val Loss | İyileşme | Boyut |
+|-------|------|------------|----------|----------|-------|
+| Math | 21 TR + GSM8K | 0.009 | 0.512 | %74 | 26.6 MB |
+| Science | 15 TR + SciQ 11K | 0.009 | 1.258 | %64 | 26.6 MB |
+| History | 21 TR/World | 0.010 | 0.015 | %99.4 | 26.6 MB |
+
+**Toplam Test:** 153 passed ✅
+**Toplam Intent:** 10
+**Toplam Adapter:** 5 (tr_chat, python_coder, math_expert, science_expert, history_expert)
+
+---
+
+## 📅 5 Aralık 2024 - Oturum 9
+
+### 🎯 Aktif Görev
+**FAZ 8: Web Arayüzü (The Interface)**
+
+### 📝 İşlem Geçmişi
+
+| Zaman | İşlem | Durum | Notlar |
+|-------|-------|-------|--------|
+| 17:00 | FAZ 8 başladı | ✅ | Backend API + Frontend |
+| 17:15 | FastAPI backend | ✅ | src/web/app.py |
+| 17:20 | Endpoint'ler | ✅ | /health, /status, /adapters, /intents, /route, /chat |
+| 17:25 | Frontend HTML | ✅ | src/web/static/index.html |
+| 17:30 | Server script | ✅ | scripts/run_server.py |
+| 17:35 | EvoTR import fix | ✅ | EvoTROrchestrator → EvoTR |
+| 17:40 | Chat parameter fix | ✅ | max_tokens kaldırıldı |
+| 17:45 | All endpoints test | ✅ | Chat, Math, History çalışıyor |
+
+### 🔧 FAZ 8.1 Backend API TAMAMLANDI! ✅
+
+**Çalışan Endpoint'ler:**
+- `GET /health` - Sağlık kontrolü
+- `GET /status` - Sistem durumu (model, bellek, uptime)
+- `GET /adapters` - Mevcut adapter'lar listesi
+- `GET /intents` - Intent kategorileri
+- `GET /route?message=...` - Intent routing testi
+- `POST /chat` - Ana chat endpoint (auto-routing)
+- `POST /chat/stream` - **SSE Streaming** ✅ YENİ!
+
+**Chat Test Sonuçları:**
+| Soru | Intent | Adapter | Süre |
+|------|--------|---------|------|
+| "Merhaba, nasılsın?" | general_chat (82%) | base_model | 1.5s |
+| "Python ile liste nasıl sıralarım?" | code_python (72%) | python_coder | 3.9s |
+| "3x + 5 = 17 çöz" | code_math (71%) | math_expert | 2.8s |
+| "Birinci Dünya Savaşı?" | history (67%) | history_expert | 15.5s |
+
+**Web UI:**
+- Dark theme tasarım
+- Adapter seçimi (sidebar)
+- Typing indicator
+- Intent badge
+- Responsive layout
+
+**Dosyalar:**
+```
+src/web/
+├── __init__.py
+├── app.py (FastAPI backend)
+└── static/
+    └── index.html (Chat UI)
+
+scripts/
+└── run_server.py (Uvicorn starter)
+```
+
+### ✅ FAZ 8.2 Streaming TAMAMLANDI!
+
+**Streaming Özellikleri:**
+- MLX `stream_generate` entegrasyonu
+- Token-by-token SSE stream
+- Frontend'de canlı yazma efekti
+- Typing cursor animasyonu
+
+**Event Formatı:**
+```json
+{"type": "meta", "intent": "...", "confidence": 0.82, "adapter": "..."}
+{"type": "token", "text": "Mer"}
+{"type": "token", "text": "hab"}
+{"type": "done", "tokens_generated": 18, "generation_time": 1.478}
+```
+
+**Güncellenen Dosyalar:**
+- `src/inference/mlx_inference.py` - `generate_stream()`, `generate_response_stream()`
+- `src/orchestrator.py` - `chat_stream()`
+- `src/web/app.py` - `/chat/stream` endpoint
+- `src/web/static/index.html` - Streaming UI
+
+### ✅ FAZ 8.3 WebSocket TAMAMLANDI!
+
+**WebSocket Özellikleri:**
+- Endpoint: `ws://localhost:8000/ws/chat`
+- Bi-directional real-time communication
+- Aynı streaming format (meta → tokens → done)
+- Auto-reconnect desteği frontend'de
+- SSE/WS toggle switch
+
+**WebSocket Test:**
+```python
+async with websockets.connect('ws://localhost:8000/ws/chat') as ws:
+    await ws.send(json.dumps({'message': 'Merhaba!'}))
+    # Receive: connected, meta, tokens..., done
+```
+
+**Frontend Toggle:**
+- SSE (default): `/chat/stream` endpoint kullanır
+- WS: WebSocket connection ile streaming
+
+**Güncellenen Dosyalar:**
+- `src/web/app.py` - `/ws/chat` WebSocket endpoint (real streaming)
+- `src/web/static/index.html` - WebSocket toggle + sendMessageViaWebSocket()
+
+### ✅ FAZ 8.4 Test Yazımı TAMAMLANDI!
+
+**Web API Testleri:** `tests/test_web_api.py`
+- TestWebAppStructure (4 test)
+- TestAppImports (4 test)
+- TestEndpoints (9 test)
+- TestPydanticModels (3 test)
+- TestAppState (3 test)
+- TestFrontendContent (9 test)
+- TestStreamingInfrastructure (3 test)
+- TestCORSConfig (1 test)
+
+**Toplam:** 35 Web API testi ✅
+
+### 🎉 FAZ 8 TAMAMLANDI!
+
+**Özet:**
+| Bileşen | Durum | Detay |
+|---------|-------|-------|
+| Backend API | ✅ | 8 endpoint (/health, /status, /adapters, /intents, /route, /chat, /chat/stream, /ws/chat) |
+| Frontend | ✅ | Dark theme, adapter seçici, streaming UI |
+| SSE Streaming | ✅ | Token-by-token, typing cursor |
+| WebSocket | ✅ | Real-time bi-directional |
+| Testler | ✅ | 35 test passed |
+
+**Toplam Test:** 188 passed ✅
+
+---
+
+## 📊 FAZ 8 ÖZET: Web Arayüzü
+
+**Erişim:**
+- Chat UI: http://localhost:8000
+- API Docs: http://localhost:8000/docs
+- WebSocket: ws://localhost:8000/ws/chat
+
+**Dosyalar:**
+```
+src/web/
+├── __init__.py
+├── app.py (FastAPI backend)
+└── static/
+    └── index.html (Chat UI)
+
+scripts/
+└── run_server.py (Uvicorn starter)
+
+tests/
+└── test_web_api.py (35 tests)
+```
+
+**Özellikler:**
+- Auto-routing (intent detection)
+- 5 expert adapter
+- SSE + WebSocket streaming
+- Memory/RAG integration
+- Responsive dark theme UI
+
+---
+
+## 📅 4 Aralık 2024 - Oturum 8 (devam)
+
+### 🎯 Aktif Görev
+**FAZ 9: Continuous Learning**
+
+### 📝 İşlem Geçmişi
+
+| Zaman | İşlem | Durum | Notlar |
+|-------|-------|-------|--------|
+| 9.1.1 | FeedbackDatabase oluşturma | ✅ | SQLite tabanlı feedback storage |
+| 9.1.2 | FeedbackEntry dataclass | ✅ | session_id, message_id, rating, correction |
+| 9.1.3 | Feedback API endpoints | ✅ | POST /feedback/add, GET /feedback/stats |
+| 9.1.4 | FeedbackRequest/Response modelleri | ✅ | Pydantic models |
+| 9.1.5 | Frontend feedback butonları | ✅ | 👍/👎 butonları, sendFeedback() |
+| 9.1.6 | messageHistory tracking | ✅ | Mesaj-feedback eşleştirmesi |
+| 9.1.7 | Testler | ✅ | 19 yeni feedback testi |
+
+### ✅ FAZ 9.1 TAMAMLANDI!
+
+**Feedback Sistemi Özellikleri:**
+- SQLite veritabanı: `data/feedback.db`
+- 6 feedback türü: thumbs_up, thumbs_down, edit, retry, report
+- 8 kategori: helpful, accurate, irrelevant, incorrect, offensive, too_long, too_short, other
+- Correction/düzeltme desteği
+- Frontend 👍/👎 butonları
+- Gerçek zamanlı feedback gönderimi
+
+**Yeni Dosyalar:**
+```
+src/lifecycle/
+└── feedback.py (FeedbackDatabase, FeedbackEntry)
+
+src/web/app.py (güncellemeler):
+├── FeedbackRequest model
+├── FeedbackResponse model
+├── POST /feedback/add endpoint
+└── GET /feedback/stats endpoint
+
+src/web/static/index.html (güncellemeler):
+├── .feedback-buttons CSS
+├── sendFeedback() function
+└── messageHistory tracking
+```
+
+**Test Sonuçları:**
+- Web API testleri: 54 passed
+- Toplam testler: **207 passed** ✅
+
+---
+
+### ✅ FAZ 9.2 - Active Learning TAMAMLANDI
+
+| Zaman | İşlem | Durum | Notlar |
+|-------|-------|-------|--------|
+| 9.2.1 | UncertaintyDetector | ✅ | Belirsizlik tespit sistemi |
+| 9.2.2 | UncertaintyType/Level enums | ✅ | 7 belirsizlik türü, 5 seviye |
+| 9.2.3 | ActiveLearningManager | ✅ | Eğitim adayı toplama |
+| 9.2.4 | Clarification prompts | ✅ | Kullanıcıya açıklama soruları |
+| 9.2.5 | Testler | ✅ | 18 active learning testi |
+
+**Yeni Dosyalar:**
+```
+src/lifecycle/
+└── active_learning.py (UncertaintyDetector, ActiveLearningManager)
+
+tests/
+└── test_active_learning.py (18 tests)
+```
+
+---
+
+### ✅ FAZ 9.3 - Incremental Training TAMAMLANDI
+
+| Zaman | İşlem | Durum | Notlar |
+|-------|-------|-------|--------|
+| 9.3.1 | IncrementalTrainer | ✅ | LoRA güncelleme sistemi |
+| 9.3.2 | TrainingJob dataclass | ✅ | Eğitim işi yönetimi |
+| 9.3.3 | ContinuousLearningPipeline | ✅ | End-to-end eğitim döngüsü |
+| 9.3.4 | Training data preparation | ✅ | Feedback'den eğitim verisi |
+| 9.3.5 | Testler | ✅ | 19 incremental training testi |
+
+**Yeni Dosyalar:**
+```
+src/lifecycle/
+└── incremental_training.py (IncrementalTrainer, ContinuousLearningPipeline)
+
+tests/
+└── test_incremental_training.py (19 tests)
+```
+
+---
+
+### ✅ FAZ 9.4 - Preference Learning TAMAMLANDI
+
+| Zaman | İşlem | Durum | Notlar |
+|-------|-------|-------|--------|
+| 9.4.1 | PreferenceCollector | ✅ | Tercih çifti toplama |
+| 9.4.2 | PreferencePair dataclass | ✅ | DPO format desteği |
+| 9.4.3 | DPOTrainer | ✅ | Direct Preference Optimization |
+| 9.4.4 | PreferenceLearningPipeline | ✅ | End-to-end DPO pipeline |
+| 9.4.5 | Testler | ✅ | 23 preference learning testi |
+
+**Yeni Dosyalar:**
+```
+src/lifecycle/
+└── preference_learning.py (PreferenceCollector, DPOTrainer, PreferenceLearningPipeline)
+
+tests/
+└── test_preference_learning.py (23 tests)
+```
+
+---
+
+### 🎉 FAZ 9 TAMAMLANDI: Continuous Learning
+
+**Özet:**
+| Bileşen | Durum | Detay |
+|---------|-------|-------|
+| Feedback Collection | ✅ | SQLite DB, API endpoints, UI 👍/👎 |
+| Active Learning | ✅ | Belirsizlik tespiti, clarification prompts |
+| Incremental Training | ✅ | LoRA güncellemeleri, training pipeline |
+| Preference Learning | ✅ | DPO trainer, preference collection |
+
+**Lifecycle Modülleri:**
+```
+src/lifecycle/
+├── feedback.py (FeedbackDatabase)
+├── active_learning.py (UncertaintyDetector, ActiveLearningManager)
+├── incremental_training.py (IncrementalTrainer, ContinuousLearningPipeline)
+└── preference_learning.py (PreferenceCollector, DPOTrainer)
+```
+
+**Test Sonuçları:**
+- Active Learning: 18 tests
+- Incremental Training: 19 tests  
+- Preference Learning: 23 tests
+- Toplam: **267 passed** ✅
+
+---

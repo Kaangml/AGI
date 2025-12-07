@@ -236,6 +236,120 @@ class EvoTR:
         
         return response
     
+    def chat_stream(
+        self, 
+        message: str,
+        force_intent: Optional[str] = None,
+        force_adapter: Optional[str] = None,
+        include_rag: Optional[bool] = None
+    ):
+        """
+        Streaming chat fonksiyonu.
+        
+        Args:
+            message: Kullanıcı mesajı
+            force_intent: Intent'i zorla
+            force_adapter: Adapter'ı zorla
+            include_rag: RAG kullanımını zorla
+        
+        Yields:
+            Dict with 'type' ('token', 'meta', 'done') and content
+        """
+        import time
+        start_time = time.time()
+        
+        # 1. Intent Classification
+        if force_intent:
+            intent = force_intent
+            confidence = 1.0
+        else:
+            classification = self.router.predict(message)
+            intent = classification["intent"]
+            confidence = classification["confidence"]
+        
+        self._current_intent = intent
+        
+        # 2. Adapter Seçimi
+        if force_adapter:
+            adapter_name = force_adapter
+            if adapter_name in self.lora_manager.list_adapters():
+                model, tokenizer = self.lora_manager.load_adapter(adapter_name)
+            else:
+                model, tokenizer = self.lora_manager.load_base_model()
+        elif self.auto_adapter:
+            model, tokenizer = self.lora_manager.load_for_intent(intent)
+            adapter_name = self.lora_manager.get_current_adapter()
+        else:
+            model, tokenizer = self.lora_manager.get_model_and_tokenizer()
+            adapter_name = self.lora_manager.get_current_adapter()
+        
+        # Yield metadata first
+        yield {
+            "type": "meta",
+            "intent": intent,
+            "confidence": confidence,
+            "adapter": adapter_name or "base_model"
+        }
+        
+        # 3. RAG Context
+        use_rag = include_rag if include_rag is not None else self.use_rag
+        context = None
+        
+        if use_rag:
+            context = self.memory.get_augmented_context(
+                query=message,
+                long_term_top_k=2
+            )
+        
+        # 4. Mesajı hafızaya ekle (user)
+        self.memory.add_user_message(message, intent=intent)
+        
+        # 5. Chat history al
+        chat_history = []
+        for msg in self.memory.short_term.get_messages()[:-1]:
+            chat_history.append(msg.to_chat_format())
+        
+        # 6. Streaming Inference
+        full_response = ""
+        token_count = 0
+        
+        for token in self.inference.generate_response_stream(
+            model=model,
+            tokenizer=tokenizer,
+            user_message=message,
+            intent=intent,
+            chat_history=chat_history[-6:],
+            context=context
+        ):
+            full_response += token
+            token_count += 1
+            yield {"type": "token", "text": token}
+        
+        generation_time = time.time() - start_time
+        
+        # 7. Yanıtı hafızaya ekle (assistant)
+        self.memory.add_assistant_message(full_response)
+        
+        # 8. Konuşma kaydı
+        turn = ConversationTurn(
+            user_message=message,
+            assistant_response=full_response,
+            intent=intent,
+            confidence=confidence,
+            adapter_used=adapter_name,
+            generation_time=generation_time,
+            tokens_generated=token_count,
+            timestamp=datetime.now()
+        )
+        self._conversation_history.append(turn)
+        
+        # Yield completion
+        yield {
+            "type": "done",
+            "tokens_generated": token_count,
+            "generation_time": round(generation_time, 3)
+        }
+    
     def get_conversation_history(self) -> List[ConversationTurn]:
         """Konuşma geçmişini döndür."""
         return self._conversation_history.copy()

@@ -1,0 +1,16 @@
+{
+  "generated_at": "2025-12-04T23:05:02.868973",
+  "metrics": {
+    "generated_at": "2025-12-04T23:05:02.869006",
+    "metrics": {},
+    "alerts": []
+  },
+  "retraining_triggers": {
+    "router_retrain": false,
+    "lora_retrain": false,
+    "memory_rebuild": false
+  },
+  "pending_tasks": [],
+  "new_tasks": [],
+  "training_suggestions": []
+}

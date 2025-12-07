@@ -1,7 +1,7 @@
 {
-  "date": "2025-12-04",
+  "date": "2025-12-05",
   "analysis_type": "daily_summary",
-  "generated_at": "2025-12-04T23:05:02.870761",
+  "generated_at": "2025-12-05T08:49:41.795799",
   "summary": {
     "total_conversations": 5,
     "successful": 5,
@@ -20,7 +20,7 @@
       "null": 5
     },
     "hourly_distribution": {
-      "23": 5
+      "8": 5
     }
   },
   "recommendations": [

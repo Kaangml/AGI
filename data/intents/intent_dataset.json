@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "created_date": "2025-12-04",
-  "total_samples": 245,
+  "total_samples": 275,
   "intent_distribution": {
     "general_chat": 30,
     "turkish_culture": 30,
@@ -11,7 +11,8 @@
     "code_math": 30,
     "memory_recall": 15,
     "general_knowledge": 25,
-    "science": 30
+    "science": 30,
+    "history": 30
   },
   "intents": [
     {
@@ -1237,6 +1238,156 @@
     {
       "text": "Bağışıklık sistemi nasıl çalışır?",
       "intent": "science",
+      "language": "tr"
+    },
+    {
+      "text": "Osmanlı İmparatorluğu ne zaman kuruldu?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Fatih Sultan Mehmet kimdir?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "İstanbul ne zaman fethedildi?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Atatürk kimdir?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Kurtuluş Savaşı ne zaman oldu?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Cumhuriyet ne zaman ilan edildi?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Kanuni Sultan Süleyman dönemini anlat",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Çanakkale Savaşı hakkında bilgi ver",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Malazgirt Meydan Muharebesi neden önemli?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Lozan Antlaşması ne zaman imzalandı?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Selçuklular hakkında bilgi ver",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Göktürkler kimlerdir?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Mimar Sinan kimdir?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Atatürk ilkeleri nelerdir?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Türkiye Cumhuriyeti nasıl kuruldu?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "When was the Ottoman Empire founded?",
+      "intent": "history",
+      "language": "en"
+    },
+    {
+      "text": "Who was Ataturk?",
+      "intent": "history",
+      "language": "en"
+    },
+    {
+      "text": "Tell me about World War I",
+      "intent": "history",
+      "language": "en"
+    },
+    {
+      "text": "What caused World War II?",
+      "intent": "history",
+      "language": "en"
+    },
+    {
+      "text": "Who was Napoleon Bonaparte?",
+      "intent": "history",
+      "language": "en"
+    },
+    {
+      "text": "Birinci Dünya Savaşı nasıl başladı?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Roma İmparatorluğu ne zaman yıkıldı?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Fransız İhtilali ne zaman oldu?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Mondros Mütarekesi nedir?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Sevr Antlaşması ne anlama geliyor?",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Tanzimat Fermanı hakkında bilgi ver",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Yavuz Sultan Selim dönemi",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Osmanlı padişahlarını say",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Türk tarihindeki önemli savaşlar",
+      "intent": "history",
+      "language": "tr"
+    },
+    {
+      "text": "Sakarya Meydan Muharebesi nedir?",
+      "intent": "history",
       "language": "tr"
     }
   ]
