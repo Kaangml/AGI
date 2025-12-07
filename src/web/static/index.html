@@ -518,13 +518,49 @@
 
     <div class="container">
         <aside class="sidebar">
-            <h3>Uzmanlar</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <h3 style="margin: 0;">Uzmanlar</h3>
+            </div>
             <ul class="adapter-list" id="adapterList">
                 <li class="adapter-item active" data-adapter="auto">
                     <div class="adapter-name">🎯 Otomatik</div>
                     <div class="adapter-desc">Soruya göre uzman seç</div>
                 </li>
             </ul>
+
+            <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0;">💬 Sohbet Geçmişi</h3>
+                <button onclick="clearHistory()"
+                    style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.8rem;"
+                    title="Geçmişi temizle">🗑️</button>
+            </div>
+            <div id="chatHistory" style="margin-top: 0.5rem; max-height: 200px; overflow-y: auto;">
+                <div style="font-size: 0.75rem; color: var(--text-muted); padding: 0.5rem;">
+                    Henüz sohbet yok
+                </div>
+            </div>
+
+            <h3 style="margin-top: 1.5rem;">📋 TODO</h3>
+            <div style="display: flex; gap: 0.25rem; margin-bottom: 0.5rem;">
+                <input type="text" id="todoInput" placeholder="Yeni görev..."
+                    style="flex:1; padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text); font-size: 0.75rem;">
+                <button onclick="addTodo()"
+                    style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: none; background: var(--success); color: white; cursor: pointer; font-size: 0.75rem;">+</button>
+            </div>
+            <div id="todoList" style="max-height: 150px; overflow-y: auto; font-size: 0.75rem;"></div>
+
+            <h3 style="margin-top: 1.5rem;">🧠 Memory</h3>
+            <div id="memoryInfo" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                <span id="memoryCount">-</span> kayıt
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="text" id="memorySearch" placeholder="Ara..."
+                    style="flex:1; padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: 1px solid var(--border); background: var(--bg-dark); color: var(--text); font-size: 0.75rem;">
+                <button onclick="searchMemory()"
+                    style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: none; background: var(--primary); color: white; cursor: pointer; font-size: 0.75rem;">🔍</button>
+            </div>
+            <div id="memoryResults"
+                style="margin-top: 0.5rem; max-height: 150px; overflow-y: auto; font-size: 0.75rem;"></div>
 
             <h3 style="margin-top: 1.5rem;">Sistem</h3>
             <div id="systemInfo" style="font-size: 0.8rem; color: var(--text-muted);">
@@ -577,6 +613,7 @@
         async function init() {
             await loadAdapters();
             await loadStatus();
+            await loadTodos();
             setupEventListeners();
             updateStatus(true);
         }
@@ -664,8 +701,212 @@
                     <div>Uptime: ${Math.round(status.uptime_seconds)}s</div>
                     <div>Adapters: ${status.adapters_available.length}</div>
                 `;
+
+                // Load memory stats
+                loadMemoryStats();
             } catch (e) {
                 systemInfo.innerHTML = 'Bağlantı hatası';
+            }
+        }
+
+        // Load memory statistics
+        async function loadMemoryStats() {
+            try {
+                const res = await fetch(`${API_URL}/memory/stats`);
+                const stats = await res.json();
+                document.getElementById('memoryCount').textContent = stats.total_memories || 0;
+            } catch (e) {
+                document.getElementById('memoryCount').textContent = '-';
+            }
+        }
+
+        // Search memory
+        async function searchMemory() {
+            const query = document.getElementById('memorySearch').value.trim();
+            if (!query) return;
+
+            const resultsEl = document.getElementById('memoryResults');
+            resultsEl.innerHTML = '<div style="color: var(--text-muted);">Aranıyor...</div>';
+
+            try {
+                const res = await fetch(`${API_URL}/memory/search?query=${encodeURIComponent(query)}&limit=5`);
+                const data = await res.json();
+
+                if (data.results && data.results.length > 0) {
+                    resultsEl.innerHTML = data.results.map(r => `
+                        <div style="padding: 0.5rem; border-bottom: 1px solid var(--border); cursor: pointer;" onclick="insertMemory('${r.content?.substring(0, 50).replace(/'/g, "\\'")}...')">
+                            <div style="color: var(--text);">${r.content?.substring(0, 100) || '-'}...</div>
+                            <div style="color: var(--text-muted); font-size: 0.7rem;">Score: ${(r.score || 0).toFixed(2)}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    resultsEl.innerHTML = '<div style="color: var(--text-muted); padding: 0.5rem;">Sonuç bulunamadı</div>';
+                }
+            } catch (e) {
+                resultsEl.innerHTML = '<div style="color: var(--danger); padding: 0.5rem;">Hata</div>';
+            }
+        }
+
+        // Insert memory into input
+        function insertMemory(text) {
+            inputEl.value = text;
+            inputEl.focus();
+        }
+
+        // Clear conversation history
+        async function clearHistory() {
+            if (!confirm('Sohbet geçmişini temizlemek istediğinize emin misiniz?')) return;
+
+            try {
+                await fetch(`${API_URL}/history`, { method: 'DELETE' });
+                messagesEl.innerHTML = `
+                    <div class="message assistant">
+                        <div class="message-content">
+                            Sohbet geçmişi temizlendi. Size nasıl yardımcı olabilirim?
+                        </div>
+                    </div>
+                `;
+                updateChatHistory([]);
+            } catch (e) {
+                console.error('Error clearing history:', e);
+            }
+        }
+
+        // Update chat history sidebar
+        function updateChatHistory(conversations) {
+            const historyEl = document.getElementById('chatHistory');
+
+            if (!conversations || conversations.length === 0) {
+                historyEl.innerHTML = '<div style="font-size: 0.75rem; color: var(--text-muted); padding: 0.5rem;">Henüz sohbet yok</div>';
+                return;
+            }
+
+            // Group by first message (simplified)
+            const items = conversations.slice(-10).reverse();
+            historyEl.innerHTML = items.map((c, i) => `
+                <div style="padding: 0.5rem; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 0.75rem;" 
+                     onclick="scrollToMessage(${i})" title="${c.user}">
+                    <div style="color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${c.user?.substring(0, 30) || '-'}...
+                    </div>
+                    <div style="color: var(--text-muted); font-size: 0.65rem;">
+                        ${c.intent || 'general'} • ${c.adapter || 'auto'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Scroll to message (placeholder)
+        function scrollToMessage(index) {
+            // Could implement scrolling to specific message
+            console.log('Scroll to message:', index);
+        }
+
+        // Track conversation for history sidebar
+        function addToConversationHistory(userMessage, assistantResponse, intent, adapter) {
+            const historyEl = document.getElementById('chatHistory');
+            const item = document.createElement('div');
+            item.style.cssText = 'padding: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.75rem;';
+            item.innerHTML = `
+                <div style="color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    ${userMessage?.substring(0, 30) || '-'}...
+                </div>
+                <div style="color: var(--text-muted); font-size: 0.65rem;">
+                    ${intent || 'general'} • ${adapter || 'auto'}
+                </div>
+            `;
+
+            // Insert at top
+            if (historyEl.firstChild) {
+                historyEl.insertBefore(item, historyEl.firstChild);
+            } else {
+                historyEl.appendChild(item);
+            }
+
+            // Limit to 10 items
+            while (historyEl.children.length > 10) {
+                historyEl.removeChild(historyEl.lastChild);
+            }
+        }
+
+        // ============== TODO Functions ==============
+
+        // Load todos
+        async function loadTodos() {
+            try {
+                const res = await fetch(`${API_URL}/todos`);
+                const data = await res.json();
+                renderTodos(data.todos || []);
+            } catch (e) {
+                console.error('Error loading todos:', e);
+            }
+        }
+
+        // Render todos
+        function renderTodos(todos) {
+            const listEl = document.getElementById('todoList');
+
+            if (!todos || todos.length === 0) {
+                listEl.innerHTML = '<div style="color: var(--text-muted); padding: 0.5rem;">Görev yok</div>';
+                return;
+            }
+
+            listEl.innerHTML = todos.map(todo => {
+                const statusIcon = todo.status === 'completed' ? '✅' :
+                    todo.status === 'in-progress' ? '🔄' : '⬜';
+                const statusClass = todo.status === 'completed' ? 'text-decoration: line-through; opacity: 0.6;' : '';
+                return `
+                    <div style="padding: 0.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem;">
+                        <span onclick="toggleTodo(${todo.id}, '${todo.status}')" style="cursor: pointer;">${statusIcon}</span>
+                        <span style="flex: 1; ${statusClass}">${todo.title}</span>
+                        <span onclick="deleteTodo(${todo.id})" style="cursor: pointer; opacity: 0.5;">🗑️</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Add todo
+        async function addTodo() {
+            const input = document.getElementById('todoInput');
+            const title = input.value.trim();
+            if (!title) return;
+
+            try {
+                await fetch(`${API_URL}/todos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, status: 'not-started' })
+                });
+                input.value = '';
+                loadTodos();
+            } catch (e) {
+                console.error('Error adding todo:', e);
+            }
+        }
+
+        // Toggle todo status
+        async function toggleTodo(id, currentStatus) {
+            const nextStatus = currentStatus === 'not-started' ? 'in-progress' :
+                currentStatus === 'in-progress' ? 'completed' : 'not-started';
+            try {
+                await fetch(`${API_URL}/todos/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: '', status: nextStatus })
+                });
+                loadTodos();
+            } catch (e) {
+                console.error('Error updating todo:', e);
+            }
+        }
+
+        // Delete todo
+        async function deleteTodo(id) {
+            try {
+                await fetch(`${API_URL}/todos/${id}`, { method: 'DELETE' });
+                loadTodos();
+            } catch (e) {
+                console.error('Error deleting todo:', e);
             }
         }
 
@@ -790,6 +1031,9 @@
                                 intent: metadata.intent,
                                 adapter: metadata.adapter || selectedAdapter
                             });
+
+                            // Update sidebar history
+                            addToConversationHistory(message, fullText, metadata.intent, metadata.adapter);
                         }
 
                         ws.removeEventListener('message', handleMessage);
@@ -902,6 +1146,9 @@
                         intent: metadata.intent,
                         adapter: metadata.adapter || selectedAdapter
                     });
+
+                    // Update sidebar history
+                    addToConversationHistory(message, fullText, metadata.intent, metadata.adapter);
                 }
 
             } catch (e) {

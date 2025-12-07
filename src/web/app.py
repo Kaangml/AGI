@@ -549,6 +549,78 @@ async def get_feedback_stats():
     return stats
 
 
+# ============== Conversation History ==============
+
+@app.get("/history")
+async def get_conversation_history():
+    """Get conversation history from memory."""
+    await state.initialize()
+    
+    if state.orchestrator is None:
+        return {"conversations": [], "total": 0}
+    
+    try:
+        # Get recent conversations from memory
+        history = state.orchestrator.get_conversation_history()
+        
+        conversations = []
+        for turn in history[-50:]:  # Son 50 mesaj
+            conversations.append({
+                "user": turn.user_message,
+                "assistant": turn.assistant_response,
+                "intent": turn.intent,
+                "adapter": turn.adapter_used,
+                "timestamp": turn.timestamp.isoformat() if turn.timestamp else None
+            })
+        
+        return {"conversations": conversations, "total": len(conversations)}
+    except Exception as e:
+        return {"conversations": [], "total": 0, "error": str(e)}
+
+
+@app.delete("/history")
+async def clear_history():
+    """Clear conversation history."""
+    await state.initialize()
+    
+    if state.orchestrator:
+        state.orchestrator.clear_conversation()
+    
+    return {"success": True, "message": "Conversation history cleared"}
+
+
+# ============== Memory/RAG Endpoints ==============
+
+@app.get("/memory/search")
+async def memory_search_get(query: str, limit: int = 5):
+    """Search memory with GET request."""
+    await state.initialize()
+    
+    if state.orchestrator is None:
+        return {"results": [], "query": query}
+    
+    try:
+        results = state.orchestrator.memory.search(query, n_results=limit)
+        return {"results": results, "query": query, "count": len(results)}
+    except Exception as e:
+        return {"results": [], "query": query, "error": str(e)}
+
+
+@app.get("/memory/stats")
+async def memory_stats():
+    """Get memory statistics."""
+    await state.initialize()
+    
+    if state.orchestrator is None:
+        return {"error": "Orchestrator not initialized"}
+    
+    try:
+        stats = state.orchestrator.memory.get_stats()
+        return stats
+    except Exception as e:
+        return {"error": str(e)}
+
+
 # ============== Monitoring Endpoints ==============
 
 @app.get("/monitor/stats")
@@ -716,25 +788,197 @@ async def monitor_dashboard():
 
 
 @app.post("/monitor/train")
-async def trigger_training():
-    """Trigger training manually."""
+async def trigger_training(type: str = None):
+    """Trigger training manually. Type can be 'sft', 'dpo', or None for both."""
     import subprocess
     import sys
     
     try:
+        # Build command based on training type
+        cmd = [sys.executable, "./scripts/training_pipeline.py", "train"]
+        
+        if type == "sft":
+            cmd.append("--sft-only")
+        elif type == "dpo":
+            cmd.append("--dpo-only")
+        # else: train both (default)
+        
         result = subprocess.run(
-            [sys.executable, "./scripts/process_feedback.py", "--train"],
+            cmd,
             capture_output=True,
             text=True,
-            timeout=300
+            timeout=600  # 10 minutes for training
         )
         return {
             "success": result.returncode == 0,
             "stdout": result.stdout,
-            "stderr": result.stderr
+            "stderr": result.stderr,
+            "type": type or "both"
+        }
+    except subprocess.TimeoutExpired:
+        return {
+            "success": False,
+            "message": "Training timeout (10 minutes exceeded)",
+            "type": type or "both"
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/monitor/training-status")
+async def get_training_status():
+    """Get detailed training pipeline status."""
+    import sqlite3
+    
+    db_path = Path("./data/feedback.db")
+    if not db_path.exists():
+        return {"error": "Database not found"}
+    
+    try:
+        conn = sqlite3.connect(str(db_path))
+        cursor = conn.cursor()
+        
+        # Genel istatistikler
+        cursor.execute("SELECT COUNT(*) FROM feedback")
+        total = cursor.fetchone()[0]
+        
+        # Türe göre
+        cursor.execute("""
+            SELECT feedback_type, COUNT(*) 
+            FROM feedback 
+            GROUP BY feedback_type
+        """)
+        by_type = dict(cursor.fetchall())
+        
+        # SFT için - Düzeltme sayısı
+        cursor.execute("""
+            SELECT COUNT(*) FROM feedback 
+            WHERE corrected_response IS NOT NULL 
+            AND corrected_response != ''
+            AND used_for_training = 0
+        """)
+        sft_candidates = cursor.fetchone()[0]
+        
+        # DPO için - Thumbs up/down
+        cursor.execute("""
+            SELECT COUNT(*) FROM feedback 
+            WHERE feedback_type IN ('thumbs_up', 'thumbs_down')
+            AND used_for_training = 0
+        """)
+        preference_count = cursor.fetchone()[0]
+        
+        # DPO pair potansiyeli
+        cursor.execute("""
+            SELECT intent, 
+                   SUM(CASE WHEN feedback_type = 'thumbs_up' THEN 1 ELSE 0 END) as pos,
+                   SUM(CASE WHEN feedback_type = 'thumbs_down' THEN 1 ELSE 0 END) as neg
+            FROM feedback 
+            WHERE feedback_type IN ('thumbs_up', 'thumbs_down')
+            AND used_for_training = 0
+            GROUP BY intent
+            HAVING pos > 0 AND neg > 0
+        """)
+        dpo_intents = cursor.fetchall()
+        
+        # Eğitimde kullanılan
+        cursor.execute("SELECT COUNT(*) FROM feedback WHERE used_for_training = 1")
+        trained = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        sft_threshold = 5
+        dpo_threshold = 10
+        
+        return {
+            "total_feedback": total,
+            "by_type": by_type,
+            "trained_count": trained,
+            "sft": {
+                "name": "SFT (Supervised Fine-Tuning)",
+                "description": "Düzeltmelerden öğrenme",
+                "count": sft_candidates,
+                "candidates": sft_candidates,
+                "threshold": sft_threshold,
+                "ready": sft_candidates >= sft_threshold,
+                "icon": "✏️"
+            },
+            "dpo": {
+                "name": "DPO (Direct Preference Optimization)",
+                "description": "Tercihlerden öğrenme (👍/👎)",
+                "count": preference_count,
+                "preference_count": preference_count,
+                "intents_with_pairs": len(dpo_intents),
+                "threshold": dpo_threshold,
+                "ready": preference_count >= dpo_threshold and len(dpo_intents) > 0,
+                "icon": "🔄"
+            }
+        }
+        
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# Alias for /training/status
+@app.get("/training/status")
+async def get_training_status_alias():
+    """Alias for training status endpoint."""
+    return await get_training_status()
+
+
+# ============== TODO Management ==============
+
+# Simple in-memory todo storage (could be moved to SQLite)
+_todos: List[Dict] = []
+
+class TodoItem(BaseModel):
+    """Todo item model."""
+    id: Optional[int] = None
+    title: str
+    description: str = ""
+    status: str = "not-started"  # not-started, in-progress, completed
+    priority: str = "medium"  # low, medium, high
+
+
+@app.get("/todos")
+async def get_todos():
+    """Get all todos."""
+    return {"todos": _todos, "total": len(_todos)}
+
+
+@app.post("/todos")
+async def add_todo(todo: TodoItem):
+    """Add a new todo."""
+    new_id = max([t.get("id", 0) for t in _todos], default=0) + 1
+    new_todo = {
+        "id": new_id,
+        "title": todo.title,
+        "description": todo.description,
+        "status": todo.status,
+        "priority": todo.priority
+    }
+    _todos.append(new_todo)
+    return {"success": True, "todo": new_todo}
+
+
+@app.put("/todos/{todo_id}")
+async def update_todo(todo_id: int, todo: TodoItem):
+    """Update a todo."""
+    for t in _todos:
+        if t.get("id") == todo_id:
+            t["title"] = todo.title
+            t["description"] = todo.description
+            t["status"] = todo.status
+            t["priority"] = todo.priority
+            return {"success": True, "todo": t}
+    raise HTTPException(status_code=404, detail="Todo not found")
+
+
+@app.delete("/todos/{todo_id}")
+async def delete_todo(todo_id: int):
+    """Delete a todo."""
+    global _todos
+    _todos = [t for t in _todos if t.get("id") != todo_id]
+    return {"success": True}
 
 
 # ============== Static Files ==============

@@ -441,28 +441,66 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Training Status -->
+        <!-- Training Cards - SFT & DPO -->
+        <div class="grid" style="grid-template-columns: repeat(2, 1fr);">
+            <!-- SFT Training -->
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title">Eğitim Durumu</span>
-                    <span class="card-icon">🎓</span>
+                    <span class="card-title">✏️ SFT Eğitimi</span>
+                    <span class="card-icon">📝</span>
                 </div>
-                <div id="trainingStatus">
+                <div class="stat-label" style="margin-bottom: 0.5rem;">
+                    Düzeltmelerden öğrenme (Supervised Fine-Tuning)
+                </div>
+                <div id="sftStatus">
                     <span class="status-badge status-warning">
                         <span class="status-dot"></span>
                         Veri toplanıyor
                     </span>
                 </div>
                 <div style="margin-top: 0.75rem;">
-                    <div class="stat-label">Düzeltme: <span id="correctionCount">-</span> / 10</div>
+                    <div class="stat-label">Düzeltme: <span id="sftCount">-</span> / <span id="sftThreshold">5</span>
+                    </div>
                     <div class="progress-bar">
-                        <div class="progress-fill progress-primary" id="trainingBar" style="width: 0%"></div>
+                        <div class="progress-fill progress-success" id="sftBar" style="width: 0%"></div>
                     </div>
                 </div>
                 <div class="training-section">
-                    <button class="btn btn-primary" onclick="triggerTraining()" id="trainBtn">
-                        🚀 Eğitimi Başlat
+                    <button class="btn btn-success" onclick="triggerSFT()" id="sftBtn" disabled>
+                        🚀 SFT Başlat
+                    </button>
+                </div>
+            </div>
+
+            <!-- DPO Training -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">🔄 DPO Eğitimi</span>
+                    <span class="card-icon">⚖️</span>
+                </div>
+                <div class="stat-label" style="margin-bottom: 0.5rem;">
+                    Tercihlerden öğrenme (👍 vs 👎)
+                </div>
+                <div id="dpoStatus">
+                    <span class="status-badge status-warning">
+                        <span class="status-dot"></span>
+                        Pair gerekli
+                    </span>
+                </div>
+                <div style="margin-top: 0.75rem;">
+                    <div class="stat-label">
+                        Tercih: <span id="dpoPreferences">-</span> |
+                        Pair: <span id="dpoPairs">-</span> intent
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-primary" id="dpoBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="training-section">
+                    <button class="btn btn-primary" onclick="triggerDPO()" id="dpoBtn" disabled>
+                        🚀 DPO Başlat
                     </button>
                 </div>
             </div>
@@ -522,8 +560,18 @@
 
         async function fetchStats() {
             try {
-                const response = await fetch(`${API_URL}/monitor/stats`);
-                const data = await response.json();
+                // Fetch both stats and training status in parallel
+                const [statsResponse, trainingResponse] = await Promise.all([
+                    fetch(`${API_URL}/monitor/stats`),
+                    fetch(`${API_URL}/training/status`)
+                ]);
+
+                const data = await statsResponse.json();
+                const trainingData = await trainingResponse.json();
+
+                // Merge training data
+                data.training = trainingData;
+
                 updateUI(data);
             } catch (error) {
                 console.error('Error fetching stats:', error);
@@ -568,34 +616,13 @@
                 document.getElementById('corrections').textContent =
                     data.feedback.corrections || 0;
 
-                // Training progress
-                const corrections = data.feedback.corrections || 0;
-                const threshold = data.feedback.training_threshold || 10;
-                document.getElementById('correctionCount').textContent = corrections;
-                document.getElementById('trainingBar').style.width =
-                    `${Math.min(100, (corrections / threshold) * 100)}%`;
-
-                // Training status
-                const trainStatus = document.getElementById('trainingStatus');
-                const trainBtn = document.getElementById('trainBtn');
-                if (data.feedback.ready_for_training) {
-                    trainStatus.innerHTML = `
-                        <span class="status-badge status-online">
-                            <span class="status-dot"></span>
-                            Eğitime hazır!
-                        </span>`;
-                    trainBtn.disabled = false;
-                } else {
-                    trainStatus.innerHTML = `
-                        <span class="status-badge status-warning">
-                            <span class="status-dot"></span>
-                            ${threshold - corrections} düzeltme daha gerekli
-                        </span>`;
-                    trainBtn.disabled = true;
-                }
-
                 // Recent feedback table
                 updateFeedbackTable(data.feedback.recent || []);
+            }
+
+            // Training status (SFT + DPO)
+            if (data.training) {
+                updateTrainingStatus(data.training);
             }
 
             // Adapters
@@ -662,6 +689,103 @@
             return `${secs}s`;
         }
 
+        function updateTrainingStatus(training) {
+            // SFT Status
+            if (training.sft) {
+                const sft = training.sft;
+                const sftPercent = Math.min(100, (sft.count / sft.threshold) * 100);
+
+                document.getElementById('sftCount').textContent = sft.count;
+                document.getElementById('sftThreshold').textContent = sft.threshold;
+                document.getElementById('sftBar').style.width = `${sftPercent}%`;
+
+                const sftStatus = document.getElementById('sftStatus');
+                const sftBtn = document.getElementById('sftBtn');
+
+                if (sft.ready) {
+                    sftStatus.innerHTML = `<span class="status-badge status-online"><span class="status-dot"></span>Eğitime hazır!</span>`;
+                    sftBtn.disabled = false;
+                } else {
+                    sftStatus.innerHTML = `<span class="status-badge status-warning"><span class="status-dot"></span>${sft.threshold - sft.count} düzeltme daha</span>`;
+                    sftBtn.disabled = true;
+                }
+            }
+
+            // DPO Status
+            if (training.dpo) {
+                const dpo = training.dpo;
+                const dpoPercent = Math.min(100, (dpo.count / dpo.threshold) * 100);
+
+                document.getElementById('dpoPreferences').textContent = dpo.preference_count || 0;
+                document.getElementById('dpoPairs').textContent = dpo.intents_with_pairs || 0;
+                document.getElementById('dpoBar').style.width = `${dpoPercent}%`;
+
+                const dpoStatus = document.getElementById('dpoStatus');
+                const dpoBtn = document.getElementById('dpoBtn');
+
+                if (dpo.ready) {
+                    dpoStatus.innerHTML = `<span class="status-badge status-online"><span class="status-dot"></span>Eğitime hazır!</span>`;
+                    dpoBtn.disabled = false;
+                } else {
+                    const remaining = dpo.intents_with_pairs === 0 ?
+                        'Pair oluşturulabilir intent yok' :
+                        `${dpo.threshold - dpo.count} tercih daha`;
+                    dpoStatus.innerHTML = `<span class="status-badge status-warning"><span class="status-dot"></span>${remaining}</span>`;
+                    dpoBtn.disabled = true;
+                }
+            }
+        }
+
+        async function triggerSFT() {
+            const btn = document.getElementById('sftBtn');
+            btn.disabled = true;
+            btn.innerHTML = '⏳ SFT Başlıyor...';
+
+            try {
+                const response = await fetch(`${API_URL}/monitor/train?type=sft`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ SFT eğitimi başarıyla tamamlandı!');
+                } else {
+                    alert('⚠️ SFT tamamlandı ama hatalar olabilir.\n\n' + (result.stderr || result.message));
+                }
+            } catch (error) {
+                alert('❌ SFT başlatılamadı: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '🚀 SFT Başlat';
+                refreshData();
+            }
+        }
+
+        async function triggerDPO() {
+            const btn = document.getElementById('dpoBtn');
+            btn.disabled = true;
+            btn.innerHTML = '⏳ DPO Başlıyor...';
+
+            try {
+                const response = await fetch(`${API_URL}/monitor/train?type=dpo`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ DPO eğitimi başarıyla tamamlandı!');
+                } else {
+                    alert('⚠️ DPO tamamlandı ama hatalar olabilir.\n\n' + (result.stderr || result.message));
+                }
+            } catch (error) {
+                alert('❌ DPO başlatılamadı: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '🚀 DPO Başlat';
+                refreshData();
+            }
+        }
+
         async function triggerTraining() {
             const btn = document.getElementById('trainBtn');
             btn.disabled = true;
@@ -694,7 +818,7 @@
         function toggleAutoRefresh() {
             const checkbox = document.getElementById('autoRefresh');
             if (checkbox.checked) {
-                autoRefreshInterval = setInterval(fetchStats, 5000);
+                autoRefreshInterval = setInterval(fetchStats, 15000); // 15 saniye
             } else {
                 clearInterval(autoRefreshInterval);
             }
@@ -703,7 +827,7 @@
         // Initialize
         document.getElementById('autoRefresh').addEventListener('change', toggleAutoRefresh);
         fetchStats();
-        autoRefreshInterval = setInterval(fetchStats, 5000);
+        autoRefreshInterval = setInterval(fetchStats, 15000); // 15 saniye
     </script>
 </body>
 
