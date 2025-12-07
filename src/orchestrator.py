@@ -17,6 +17,7 @@ from src.router.classifier import IntentClassifier
 from src.experts.lora_manager import LoRAManager
 from src.memory.memory_manager import MemoryManager
 from src.inference.mlx_inference import MLXInference, GenerationConfig, GenerationResult
+from src.ttt.test_time_training import TestTimeTrainer, TTTConfig
 
 
 @dataclass
@@ -64,6 +65,8 @@ class EvoTR:
         max_context_tokens: int = 1500,
         use_rag: bool = True,
         auto_adapter: bool = True,
+        use_ttt: bool = True,
+        ttt_config: Optional[TTTConfig] = None,
         verbose: bool = True
     ):
         """
@@ -81,11 +84,14 @@ class EvoTR:
             max_context_tokens: Maksimum kısa süreli token
             use_rag: RAG kullanılsın mı
             auto_adapter: Otomatik adapter seçimi
+            use_ttt: Test-Time Training kullanılsın mı
+            ttt_config: TTT konfigürasyonu
             verbose: Detaylı output
         """
         self.verbose = verbose
         self.use_rag = use_rag
         self.auto_adapter = auto_adapter
+        self.use_ttt = use_ttt
         
         # chromadb_path verilmişse onu kullan
         if chromadb_path:
@@ -124,6 +130,13 @@ class EvoTR:
         self._log("⚡ Inference Engine yükleniyor...")
         self.inference = MLXInference()
         
+        # 5. Test-Time Training
+        if self.use_ttt:
+            self._log("🎯 Test-Time Training başlatılıyor...")
+            self.ttt = TestTimeTrainer(ttt_config or TTTConfig())
+        else:
+            self.ttt = None
+        
         # State
         self._conversation_history: List[ConversationTurn] = []
         self._current_intent: Optional[str] = None
@@ -140,7 +153,8 @@ class EvoTR:
         message: str,
         force_intent: Optional[str] = None,
         force_adapter: Optional[str] = None,
-        include_rag: Optional[bool] = None
+        include_rag: Optional[bool] = None,
+        use_ttt: Optional[bool] = None
     ) -> str:
         """
         Ana chat fonksiyonu.
@@ -150,6 +164,7 @@ class EvoTR:
             force_intent: Intent'i zorla (otomatik yerine)
             force_adapter: Adapter'ı zorla
             include_rag: RAG kullanımını zorla
+            use_ttt: TTT kullanımını zorla
         
         Returns:
             Asistan yanıtı
@@ -184,7 +199,26 @@ class EvoTR:
         
         self._log(f"🔌 Adapter: {adapter_name or 'base_model'}")
         
-        # 3. RAG Context
+        # 3. TTT Adaptation (Pre-process)
+        ttt_enabled = use_ttt if use_ttt is not None else self.use_ttt
+        ttt_result = None
+        
+        if ttt_enabled and self.ttt:
+            ttt_result = self.ttt.adapt(
+                query=message,
+                intent=intent,
+                adapter=adapter_name or "base_model"
+            )
+            
+            # Cache hit varsa direkt dön
+            if ttt_result.get("cached_response"):
+                self._log(f"⚡ TTT Cache Hit!")
+                return ttt_result["cached_response"]
+            
+            if ttt_result.get("strategies_applied"):
+                self._log(f"🎯 TTT: {ttt_result['strategies_applied']}")
+        
+        # 4. RAG Context
         use_rag = include_rag if include_rag is not None else self.use_rag
         context = None
         
@@ -196,7 +230,7 @@ class EvoTR:
             if context:
                 self._log(f"📚 RAG: {len(context)} karakter bağlam bulundu")
         
-        # 4. Mesajı hafızaya ekle (user)
+        # 5. Mesajı hafızaya ekle (user)
         self.memory.add_user_message(message, intent=intent)
         
         # 5. Chat history al
@@ -216,10 +250,22 @@ class EvoTR:
         
         response = result.text
         
-        # 7. Yanıtı hafızaya ekle (assistant)
+        # 7. TTT Post-process (Self-correction, caching)
+        ttt_metadata = {}
+        if ttt_enabled and self.ttt:
+            response, ttt_metadata = self.ttt.post_process(
+                query=message,
+                response=response,
+                intent=intent,
+                adapter=adapter_name or "base_model"
+            )
+            if ttt_metadata.get("corrections"):
+                self._log(f"✨ TTT: Yanıt post-process edildi (quality: {ttt_metadata.get('quality_score', 0):.2f})")
+        
+        # 8. Yanıtı hafızaya ekle (assistant)
         self.memory.add_assistant_message(response)
         
-        # 8. Konuşma kaydı
+        # 9. Konuşma kaydı
         turn = ConversationTurn(
             user_message=message,
             assistant_response=response,
@@ -367,7 +413,7 @@ class EvoTR:
     def get_status(self) -> Dict[str, Any]:
         """Sistem durumu."""
         memory_stats = self.memory.get_stats()
-        return {
+        status = {
             "last_intent": self._current_intent,
             "current_adapter": self.lora_manager.get_current_adapter(),
             "conversation_turns": len(self._conversation_history),
@@ -378,8 +424,15 @@ class EvoTR:
             "inference_stats": self.inference.get_stats(),
             "available_adapters": list(self.lora_manager.list_adapters().keys()),
             "use_rag": self.use_rag,
-            "auto_adapter": self.auto_adapter
+            "auto_adapter": self.auto_adapter,
+            "use_ttt": self.use_ttt
         }
+        
+        # TTT istatistikleri ekle
+        if self.ttt:
+            status["ttt_stats"] = self.ttt.get_statistics()
+        
+        return status
     
     def search_memory(self, query: str, top_k: int = 5) -> List[Dict]:
         """Hafızada ara."""

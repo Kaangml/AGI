@@ -1,14 +1,14 @@
 {
   "date": "2025-12-06",
   "analysis_type": "daily_summary",
-  "generated_at": "2025-12-06T16:25:04.859047",
+  "generated_at": "2025-12-06T17:06:06.786942",
   "summary": {
     "total_conversations": 5,
     "successful": 5,
     "failed": 0,
     "success_rate": 1.0,
     "unique_sessions": 1,
-    "avg_response_time_ms": 0.0003814697265625,
+    "avg_response_time_ms": 0.00019073486328125,
     "max_response_time_ms": 0.00095367431640625,
     "error_count": 0
   },
@@ -20,7 +20,7 @@
       "null": 5
     },
     "hourly_distribution": {
-      "16": 5
+      "17": 5
     }
   },
   "recommendations": [
