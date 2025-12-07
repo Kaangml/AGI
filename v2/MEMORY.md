@@ -1,113 +1,140 @@
-# 🧠 EVO-TR V2 Agent Memory
+# 🧠 EVO-TR V2 Memory
 
-**Versiyon:** 2.0  
-**Başlangıç:** 6 Aralık 2024
-
----
-
-## 📅 6 Aralık 2024 - V2 Başlangıç
-
-### 🎯 Günün Hedefi
-V1'i arşivle, V2'yi başlat, Gemini ile veri üretimi
-
-### 🖥️ Sistem Bilgisi
-- **Donanım:** Mac Mini M4 (Apple Silicon)
-- **OS:** macOS 15.5 (Sequoia)
-- **Python:** 3.11.14 in .venv
-- **MLX:** 0.30.0
-
-### 📝 V2 Başlangıç İşlemleri
-
-| Zaman | İşlem | Durum | Notlar |
-|-------|-------|-------|--------|
-| 17:25 | V1 Durum Analizi | ✅ | 321 test, 7905 satır kod, 2 gerçek konuşma |
-| 17:29 | V1 Final Raporu | ✅ | v1/V1-FINAL-REPORT.md |
-| 17:29 | V1 Arşivleme | ✅ | Tüm V1 dokümanları v1/ klasörüne taşındı |
-| 17:30 | V2 Yapısı | ✅ | v2/TODO.md, v2/MEMORY.md oluşturuldu |
-| 17:35 | Gemini Generator | 🔄 | Devam ediyor |
+**Son Güncelleme:** 7 Aralık 2024 15:30
 
 ---
 
-## 🔧 V2 Teknik Detaylar
+## 📍 Şu An Neredeyiz?
 
-### API Konfigürasyonu
-- **API:** Gemini 2.5 Flash
-- **API Key:** .env'den GOOGLE_API_KEY
-- **Yöntem:** Async requests
-- **Rate Limit:** 60 req/min (free tier)
+**Aktif Faz:** V2.3 - Gerçek Kullanım (başlamak üzere)
 
-### Veri Üretim Stratejisi
-1. **Genel Sohbet:** Günlük konuşmalar, Türk kültürü
-2. **Python Kod:** Temel sorular, algoritmalar
-
-### Hedef Metrikler
-- Türkçe sohbet: 1,000 örnek
-- Python kod: 500 örnek
-- Toplam: 1,500 yeni kaliteli örnek
+**V2 Ana Hedefler:**
+1. ✅ Gemma 3 27B ile kaliteli veri üretimi - TAMAMLANDI
+2. ✅ LoRA V2 adaptörleri eğitimi - TAMAMLANDI
+3. ⬜ Gerçek kullanım ve feedback toplama
+4. ⬜ Sürekli öğrenme döngüsü
 
 ---
 
-## 📊 V1 Miras
+## 🔧 Teknik Ortam
 
-### Mevcut Varlıklar
+| Bileşen | Değer |
+|---------|-------|
+| Donanım | Mac Mini M4 (Apple Silicon, Metal GPU) |
+| Python | 3.11.14 (.venv) |
+| MLX | 0.30.0 |
+| mlx_lm | 0.28.3 |
+| Base Model | Qwen-2.5-3B-Instruct |
+| Veri Generator | Gemma 3 27B (gemma-3-27b-it) |
+| API Keys | 2 adet (GOOGLE_API_KEY, GOOGLE_API_KEY_2) |
+
+---
+
+## 📊 Veri Durumu
+
+### Gemma 3 27B Üretimi (7 Aralık 2024)
+| Kategori | Adet | Dosya | Boyut |
+|----------|------|-------|-------|
+| Türkçe Sohbet | 500 | data/generated/turkish_chat/*.jsonl | 421 KB |
+| Python Kod | 500 | data/generated/python_code/*.jsonl | 493 KB |
+| **Toplam** | **1,005** | - | **914 KB** |
+
+### MLX Eğitim Formatı
+- `data/training/gemma_tr_chat/`: 450 train + 55 valid
+- `data/training/gemma_python_code/`: 452 train + 50 valid
+
+---
+
+## 🎯 LoRA V2 Adaptörler
+
+### tr_chat_v2 ✅
+| Metrik | Değer |
+|--------|-------|
+| Durum | TAMAMLANDI |
+| Başlangıç Val Loss | 3.074 |
+| Final Val Loss | 0.257 |
+| İyileşme | %92 |
+| Süre | ~82 dakika (4911s) |
+| Klasör | adapters/tr_chat_v2/ |
+
+### python_coder_v2 ✅
+| Metrik | Değer |
+|--------|-------|
+| Durum | TAMAMLANDI |
+| Config | batch=2, rank=8, seq=512 |
+| Süre | ~92 dakika (5526s) |
+| Klasör | adapters/python_coder_v2/ |
+
+---
+
+## 📜 Son Oturum Logları
+
+### 7 Aralık 2024 - Veri Üretimi & Eğitim
 ```
-adapters/
-├── tr_chat/        # 26.6MB, 4147 örnekle eğitildi
-├── python_coder/   # 26.6MB, 13334 örnekle eğitildi
-├── math_expert/    # 26.6MB
-├── science_expert/ # 26.6MB
-├── history_expert/ # 26.6MB
-└── tr_chat_v2/     # 26.6MB
-
-models/base/
-└── qwen-2.5-3b-instruct/  # 1.6GB
+05:45 - Gemma 3 27B API'ye geçiş (rate limit: RPM=30, TPM=15K)
+05:50 - scripts/gemini_data_generator.py oluşturuldu
+06:00 - 500 Türkçe sohbet örneği üretimi başladı
+06:45 - Türkçe veri tamamlandı (500 örnek)
+07:00 - 500 Python kod örneği üretimi başladı
+07:55 - Python veri tamamlandı (500 örnek)
+08:30 - prepare_gemma_data.py ile MLX formatına dönüştürme
+09:00 - tr_chat_v2 eğitimi başladı
+10:22 - tr_chat_v2 tamamlandı (Val Loss: 0.257)
+10:30 - python_coder_v2 eğitimi başladı (bellek crash)
+10:35 - Bellek-dostu config ile yeniden başlatıldı
+12:00 - python_coder_v2 tamamlandı
 ```
 
-### V1 Test Durumu
-- Router: 15 tests
-- Memory: 25 tests
-- Integration: 25 tests
-- Lifecycle: 28 tests
-- Active Learning: 18 tests
-- Incremental Training: 19 tests
-- Preference Learning: 23 tests
-- TTT: 54 tests
-- Web API: 54 tests
-- **Toplam: 321 passed**
+---
+
+## 🔑 Önemli Bilgiler
+
+### API Rate Limits (Gemma 3 27B)
+- RPM: 30 (Request per minute)
+- TPM: 15,000 (Token per minute)
+- RPD: 14,400 (Request per day)
+
+### Bellek-Dostu Eğitim Config
+```yaml
+batch_size: 2
+lora_layers: 8
+lora_parameters:
+  rank: 8
+  scale: 1.0
+max_seq_length: 512
+```
+
+### Öğrenilen Dersler
+1. Gemini 2.5 Flash rate limit çok düşük (RPM=5) - Gemma 3 27B kullan
+2. Python eğitimi için batch_size=2 ve rank=8 yeterli
+3. max_seq_length=512 bellek için güvenli
+4. API key rotation veri üretimini hızlandırır
 
 ---
 
-## 🎯 V2 Odak Alanları
+## �� Kritik Dosyalar
 
-### Öncelik 1: Veri Kalitesi
-- Gemini ile kaliteli sohbet verisi üret
-- Format: `{"messages": [{"role": "user/assistant", "content": "..."}]}`
-- Çeşitlilik: Farklı konular, tonlar, uzunluklar
-
-### Öncelik 2: Gerçek Kullanım
-- Web UI veya CLI ile günlük sohbet
-- Her etkileşimde feedback
-- Haftalık analiz
-
-### Öncelik 3: Öğrenme Aktifleştirme
-- IncrementalTrainer'ı gerçek verilerle çalıştır
-- DPOTrainer'ı feedback'lerle besle
-- Self-improvement pipeline'ı aktif et
+| Dosya | Amaç |
+|-------|------|
+| scripts/gemini_data_generator.py | Gemma 3 27B ile veri üretimi |
+| scripts/prepare_gemma_data.py | MLX formatına dönüştürme |
+| configs/lora_tr_config_v2.yaml | Türkçe V2 eğitim config |
+| configs/lora_python_config_v2.yaml | Python V2 eğitim config |
+| adapters/tr_chat_v2/ | Türkçe sohbet V2 adaptör |
+| adapters/python_coder_v2/ | Python kod V2 adaptör |
 
 ---
 
-## 📝 Notlar
+## ⏭️ Sonraki Adımlar
 
-### Önemli Kararlar
-- V2'de multi-modal yerine text kalitesine odaklanıyoruz
-- Gemini 2.5 Flash seçildi (hızlı, ucuz, Türkçe iyi)
-- Async yaklaşım rate limiting için
+1. **Chat CLI Güncelle**
+   - V2 adaptörlerini varsayılan yap
+   - EVO-TR system prompt ekle
 
-### Dersler (V1'den)
-1. Altyapı yetmez, veri ve kullanım şart
-2. Az kaliteli veri > Çok düşük kaliteli veri
-3. Feedback loop olmadan öğrenme olmaz
+2. **Gerçek Kullanım Başlat**
+   - Her gün 10+ sohbet
+   - Çeşitli konular test et
 
----
-
-*Son Güncelleme: 6 Aralık 2024 17:30*
+3. **Feedback Loop**
+   - Kaliteli/kötü yanıtları işaretle
+   - Haftalık analiz yap

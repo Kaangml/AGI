@@ -91,8 +91,11 @@ python -m pytest tests/test_lifecycle.py -v
 EVO-TR Mini AGI
 ├── 🧠 Router → Intent classification (7 kategori)
 ├── 🎓 LoRA Adapters
-│   ├── tr_chat → Türkçe sohbet
-│   └── python_coder → Kod yazma
+│   ├── tr_chat_v2 → Türkçe sohbet (V2 - %92 iyileşme) ⭐
+│   ├── python_coder_v2 → Kod yazma (V2) ⭐
+│   ├── math_expert → Matematik
+│   ├── history_expert → Tarih
+│   └── science_expert → Bilim
 ├── 💾 Memory
 │   ├── ChromaDB → Uzun süreli (RAG)
 │   └── ContextBuffer → Kısa süreli
@@ -115,6 +118,19 @@ EVO-TR Mini AGI
 | `src/memory/memory_manager.py` | Hafıza yönetimi |
 | `src/lifecycle/logger.py` | Log sistemi |
 | `scripts/run_analysis.py` | Gece analizi |
+| `scripts/gemini_data_generator.py` | Gemma 3 27B veri üretici |
+
+---
+
+## 📚 Dökümanlar
+
+| Dosya | Açıklama |
+|-------|----------|
+| `docs/PROJECT-STRUCTURE.md` | Dizin yapısı |
+| `docs/ARCHITECTURE.md` | Sistem mimarisi |
+| `docs/COMPONENTS.md` | Bileşen detayları |
+| `v2/TODO.md` | Güncel görevler |
+| `v2/MEMORY.md` | Güncel durum |
 
 ---
 
